@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPage - Školský systém</title>
+    <title>EduPage - Autoškola</title>
     <style>
         body {
             margin: 0; padding: 0;
@@ -22,7 +22,7 @@
         }
         .top-bar {
             background-color: #182624;
-            padding: 12px 15px;
+            padding: 10px 15px;
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid #263749;
         }
@@ -31,14 +31,17 @@
         .title-area h2 { margin: 0; font-size: 16px; color: #fff; }
         .title-area p { margin: 2px 0 0 0; font-size: 11px; color: #8c9baf; }
         
-        .mini-schedule {
+        /* Horný mini rozvrh presne ako vo videu */
+        .mini-schedule-bar {
             background-color: #16202b;
-            padding: 8px 10px;
-            display: flex; justify-content: space-between;
-            font-size: 11px; border-bottom: 1px solid #263749;
+            padding: 6px 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 10px; border-bottom: 1px solid #263749;
             color: #b4becd;
+            overflow-x: auto;
         }
-        .mini-schedule span { font-weight: bold; color: #ff8c5a; }
+        .mini-slot { text-align: center; padding: 0 4px; border-right: 1px solid #263749; }
+        .mini-slot span { display: block; font-weight: bold; color: #ff8c5a; font-size: 11px; }
 
         .grid {
             display: grid; grid-template-columns: repeat(2, 1fr);
@@ -105,8 +108,13 @@
         <button class="menu-btn" onclick="openAccountSwitch()" title="Prepnúť účet" style="font-size:14px; background:#0066cc; padding:4px 8px; border-radius:4px;">👥</button>
     </div>
 
-    <div class="mini-schedule">
-        <span>Víkend</span> zajtra: Autoškola
+    <!-- Mini rozvrh (hodiny) ako vo videu -->
+    <div class="mini-schedule-bar">
+        <div class="mini-slot"><span>1.</span>AUT<br>7:45</div>
+        <div class="mini-slot"><span>2.</span>JAZ<br>8:40</div>
+        <div class="mini-slot"><span>3.</span>TRE<br>9:35</div>
+        <div class="mini-slot"><span>4.</span>ZAS<br>10:30</div>
+        <div class="mini-slot"><span>5.</span>SKU<br>11:25</div>
     </div>
 
     <div class="grid">
@@ -114,7 +122,7 @@
             <div class="tile-icon">✉️</div>
             <div class="tile-content">
                 <h3 style="color: #ffcc00;">Správy</h3>
-                <p>Komunikácia a žiadosti</p>
+                <p>Súkromný chat a žiadosti</p>
             </div>
         </div>
         
@@ -138,7 +146,7 @@
             <div class="tile-icon">⭐</div>
             <div class="tile-content">
                 <h3 style="color: #ff6b6b;">Známky</h3>
-                <p>Autoškola: Timotej, Rebeka, Eliška</p>
+                <p>Autoškola s percentami a bodmi</p>
             </div>
         </div>
 
@@ -214,9 +222,9 @@
         <p id="drawer-user-name" style="margin:5px 0 0; font-size:12px; color:#b4becd;">Timotej</p>
     </div>
     <div class="drawer-section">Kontá</div>
-    <div class="drawer-item" onclick="toggleMenu(); openAccountSwitch()">👥 Prepnúť účet / Inšpektorka</div>
+    <div class="drawer-item" onclick="toggleMenu(); openAccountSwitch()">👥 Prepnúť účet</div>
     <div class="drawer-section">Komunikácia</div>
-    <div class="drawer-item" onclick="toggleMenu(); openInbox()">✉️ Správy a žiadosti o heslo</div>
+    <div class="drawer-item" onclick="toggleMenu(); openInbox()">✉️ Správy a súkromný chat</div>
     <div class="drawer-item" onclick="toggleMenu(); openGrades()">⭐ Známky</div>
     <div class="drawer-section">Vyučovanie</div>
     <div class="drawer-item" onclick="toggleMenu(); openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; })">📅 Rozvrh / ETK</div>
@@ -248,24 +256,33 @@
         "Rebeka": ""
     };
 
-    let scheduleText = "Sobota: 1. Teória predpisov | 2. Trenažér\nNedeľa: 1. Cvičná jazda v meste | 2. Záverečné testy";
+    let scheduleText = "Sobota: 1. Teória predpisov (Inšpektorka Olívia) | 2. Trenažér\nNedeľa: 1. Cvičná jazda v meste | 2. Záverečné testy";
     let myClassesText = "Predmet: Autoškola\nInšpektorka: Olívia\nPrehľad jázd a teórie prebieha cez víkend.";
     let examsText = "• 15.11.2026: Písomný test z pravidiel cestnej premávky\n• 22.11.2026: Praktická jazda pod dohľadom inšpektorky";
-    let uciwoText = "• Hodina 1: Križovatky a prednosť v jazde\n• Hodina 2: Parkovanie a cúvanie";
+    let uciwoText = "• Hodina 1 (Teória): Križovatky a prednosť v jazde\n• Hodina 2 (Prax): Parkovanie a cúvanie";
     let resultsText = "Všetci účastníci zatiaľ úspešne napredujú v praktických jazdách.";
     let attendanceText = "Dochádzka na hodinách autoškoly je 100% pre všetkých účastníkov.";
     let suplovanieText = "Žiadne zmeny v harmonograme autoškoly.";
     let nastenkaText = "Nové študijné materiály a testové otázky boli nahraté inšpektorkou.";
 
+    // Známky s percentami ako vo videu
     let gradesData = [
-        { name: "Timotej", grades: [1, 1, 2] },
-        { name: "Rebeka", grades: [1, 2, 1] },
-        { name: "Eliška", grades: [1, 1, 1] }
+        { name: "Timotej", grades: [1, 1, 2], percent: "85.5%" },
+        { name: "Rebeka", grades: [1, 2, 1], percent: "82.0%" },
+        { name: "Eliška", grades: [1, 1, 1], percent: "95.0%" }
     ];
 
-    let messages = [
-        { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy bude presne preskúšanie z jazdy?", reply: "Dobrý deň Timotej, testy sú naplánované na nedeľu." }
-    ];
+    let privateMessages = {
+        "Timotej": [
+            { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy presne začíname v sobotu?", reply: "Dobrý deň, začíname o 8:00." }
+        ],
+        "Eliška": [
+            { sender: "Eliška", text: "Dobrý deň, chcela by som poprosiť o heslo na moje konto.", reply: "" }
+        ],
+        "Rebeka": [
+            { sender: "Rebeka", text: "Dobrý deň, zvládla som testy na výbornú!", reply: "Skvelá práca Rebeka, gratulujem!" }
+        ]
+    };
 
     let currentSaveCallback = null;
 
@@ -274,51 +291,65 @@
     }
 
     function openAccountSwitch() {
-        let choice = prompt("Vyberte konto na prepnutie:\n1 - Olívia (Inšpektorka)\n2 - Timotej (Žiak)\n3 - Eliška (Žiačka)\n4 - Rebeka (Žiačka)\n5 - Zmeniť heslo inšpektorky Olívie");
-        
-        if (choice === "1") {
+        let html = '<p>Vyberte konto, na ktoré sa chcete prepnúť:</p>';
+        html += '<button onclick="switchUserTo(\'Olívia\', \'Inšpektorka\')" style="background:#0066cc; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">👩‍🏫 Olívia (Inšpektorka)</button>';
+        html += '<button onclick="switchUserTo(\'Timotej\', \'Žiak\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">👦 Timotej (Žiak)</button>';
+        html += '<button onclick="switchUserTo(\'Eliška\', \'Žiak\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">👧 Eliška (Žiačka)</button>';
+        html += '<button onclick="switchUserTo(\'Rebeka\', \'Žiak\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">👧 Rebeka (Žiačka)</button>';
+        html += '<hr style="border-color:#3b4e6a; margin:10px 0;">';
+        html += '<button onclick="changeInspectorPasswordPrompt()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px; width:100%; cursor:pointer;">🔑 Zmeniť heslo inšpektorky</button>';
+
+        document.getElementById("modal-title").innerText = "Prepnúť účet";
+        document.getElementById("modal-body").innerHTML = html;
+        document.getElementById("modal-save").style.display = "none";
+        document.getElementById("custom-modal").style.display = "flex";
+    }
+
+    function switchUserTo(name, role) {
+        if (role === "Inšpektorka") {
             let pass = prompt("Zadajte heslo pre inšpektorku Olíviu:");
             if (pass === passwords["Olívia"]) {
                 currentUser = "Olívia";
                 userRole = "Inšpektorka";
                 updateUIHeaders();
-                alert("Úspešne prihlásená ako Olívia (Inšpektorka).");
-            } else {
-                alert("Nesprávne heslo!");
-            }
-        } else if (choice === "2") {
-            loginStudent("Timotej");
-        } else if (choice === "3") {
-            loginStudent("Eliška");
-        } else if (choice === "4") {
-            loginStudent("Rebeka");
-        } else if (choice === "5") {
-            let oldP = prompt("Zadajte staré heslo inšpektorky:");
-            if (oldP === passwords["Olívia"]) {
-                let newP = prompt("Zadajte nové heslo:");
-                if (newP) { passwords["Olívia"] = newP; alert("Heslo inšpektorky bolo úspešne zmenené."); }
-            } else {
-                alert("Nesprávne staré heslo!");
-            }
-        }
-    }
-
-    function loginStudent(name) {
-        if (passwords[name] !== "") {
-            let pInput = prompt(`Zadajte svoje osobné heslo pre ${name}:`);
-            if (pInput === passwords[name]) {
-                currentUser = name;
-                userRole = "Žiak";
-                updateUIHeaders();
-                alert(`Úspešne prihlásený/á ako ${name}.`);
+                closeModal();
+                alert("Prihlásená ako Olívia (Inšpektorka).");
             } else {
                 alert("Nesprávne heslo!");
             }
         } else {
-            currentUser = name;
-            userRole = "Žiak";
-            updateUIHeaders();
-            alert(`Prihlásený/á ako ${name} (bez hesla).`);
+            if (passwords[name] !== "") {
+                let pInput = prompt("Zadajte heslo pre " + name + ":");
+                if (pInput === passwords[name]) {
+                    currentUser = name;
+                    userRole = "Žiak";
+                    updateUIHeaders();
+                    closeModal();
+                    alert("Prihlásený/á ako " + name);
+                } else {
+                    alert("Nesprávne heslo!");
+                }
+            } else {
+                currentUser = name;
+                userRole = "Žiak";
+                updateUIHeaders();
+                closeModal();
+                alert("Prihlásený/á ako " + name + " (bez hesla)");
+            }
+        }
+    }
+
+    function changeInspectorPasswordPrompt() {
+        let oldP = prompt("Zadajte staré heslo inšpektorky:");
+        if (oldP === passwords["Olívia"]) {
+            let newP = prompt("Zadajte nové heslo:");
+            if (newP) {
+                passwords["Olívia"] = newP;
+                alert("Heslo inšpektorky bolo zmenené.");
+                closeModal();
+            }
+        } else {
+            alert("Nesprávne staré heslo!");
         }
     }
 
@@ -361,14 +392,14 @@
 
     function openGrades() {
         let html = '<table style="width:100%; color:white; border-collapse:collapse; font-size:12px;">' +
-            '<tr style="border-bottom:1px solid #444;"><th style="text-align:left;">Účastník</th><th style="text-align:left;">Známky</th><th style="text-align:right;">Priemer</th></tr>';
+            '<tr style="border-bottom:1px solid #444;"><th style="text-align:left;">Účastník</th><th style="text-align:left;">Známky</th><th style="text-align:right;">Priemer / %</th></tr>';
         
         gradesData.forEach(function(student) {
             let avg = calculateAverage(student.grades);
             html += '<tr style="border-bottom:1px solid #333;">' +
                 '<td>' + student.name + '</td>' +
                 '<td>' + student.grades.join(", ") + '</td>' +
-                '<td style="text-align:right; font-weight:bold; color:#ff8c5a;">' + avg + '</td>' +
+                '<td style="text-align:right; font-weight:bold; color:#ff8c5a;">' + avg + ' (' + student.percent + ')</td>' +
             '</tr>';
         });
         html += '</table>';
@@ -377,7 +408,7 @@
             html += '<br><button onclick="addGradePrompt()" style="background:#0066cc; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; width:100%;">Pridať známku žiakovi</button>';
         }
 
-        document.getElementById("modal-title").innerText = "Známky a priemer - Autoškola";
+        document.getElementById("modal-title").innerText = "Známky a hodnotenie - Autoškola";
         document.getElementById("modal-body").innerHTML = html;
         document.getElementById("modal-save").style.display = "none";
         document.getElementById("custom-modal").style.display = "flex";
@@ -402,68 +433,85 @@
     }
 
     function openInbox() {
-        let html = '<div style="max-height:220px; overflow-y:auto; margin-bottom:10px;">';
-        messages.forEach(function(m, idx) {
+        let html = '';
+        if (userRole === "Inšpektorka") {
+            html += '<p style="font-size:11px; color:#8c9baf;">Vyberte žiaka, ktorého správy chcete zobraziť:</p>';
+            html += '<button onclick="showInspectorChat(\'Timotej\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">💬 Chat s Timotejom</button>';
+            html += '<button onclick="showInspectorChat(\'Eliška\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">💬 Chat s Eliškou</button>';
+            html += '<button onclick="showInspectorChat(\'Rebeka\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">💬 Chat s Rebekou</button>';
+        } else {
+            let chat = privateMessages[currentUser] || [];
+            html += '<div style="max-height:200px; overflow-y:auto; margin-bottom:10px;">';
+            chat.forEach(function(m) {
+                html += '<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">' +
+                    '<strong>Od: ' + m.sender + '</strong><p style="margin:4px 0;">' + m.text + '</p>' +
+                    (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď Olívie: ' + m.reply + '</p>' : '') +
+                '</div>';
+            });
+            html += '</div>';
+            html += '<button onclick="sendStudentMessage()" style="background:#0066cc; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">Napísať správu inšpektorke</button>';
+            html += '<button onclick="requestStudentPassword()" style="background:#ff8c5a; color:white; border:none; padding:6px; border-radius:4px; width:100%; cursor:pointer;">🔑 Poprosiť o heslo</button>';
+        }
+
+        document.getElementById("modal-title").innerText = "Inbox / Súkromné správy";
+        document.getElementById("modal-body").innerHTML = html;
+        document.getElementById("modal-save").style.display = "none";
+        document.getElementById("custom-modal").style.display = "flex";
+    }
+
+    function showInspectorChat(studentName) {
+        let chat = privateMessages[studentName] || [];
+        let html = '<p><strong>Súkromný chat s: ' + studentName + '</strong></p>';
+        html += '<div style="max-height:180px; overflow-y:auto; margin-bottom:10px;">';
+        chat.forEach(function(m) {
             html += '<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">' +
                 '<strong>Od: ' + m.sender + '</strong><p style="margin:4px 0;">' + m.text + '</p>' +
                 (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď: ' + m.reply + '</p>' : '') +
             '</div>';
         });
         html += '</div>';
+        html += '<button onclick="inspectorReply(\'' + studentName + '\')" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">Odpovedať žiakovi</button>';
+        html += '<button onclick="inspectorSetPassword(\'' + studentName + '\')" style="background:#ff8c5a; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">🔑 Nastaviť heslo pre ' + studentName + '</button>';
+        html += '<button onclick="openInbox()" style="background:#444; color:white; border:none; padding:6px; border-radius:4px; width:100%; cursor:pointer;">Späť na zoznam</button>';
 
-        if (userRole === "Inšpektorka") {
-            html += '<button onclick="replyMessagePrompt()" style="background:#4CAF50; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%; margin-bottom:5px;">Odpovedať / Nastaviť heslo žiakovi</button>';
-        } else {
-            html += '<button onclick="sendNewMessage()" style="background:#0066cc; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%; margin-bottom:5px;">Napísať správu inšpektorke</button>';
-            html += '<button onclick="requestPassword()" style="background:#ff8c5a; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%;">🔑 Poprosiť inšpektorku o heslo</button>';
-        }
-
-        document.getElementById("modal-title").innerText = "Inbox / Správy / Žiadosti";
         document.getElementById("modal-body").innerHTML = html;
-        document.getElementById("modal-save").style.display = "none";
-        document.getElementById("custom-modal").style.display = "flex";
     }
 
-    function sendNewMessage() {
-        let text = prompt("Napíšte správu pre inšpektorku Olíviu:");
+    function sendStudentMessage() {
+        let text = prompt("Napíšte správu inšpektorke Olívii:");
         if (text) {
-            messages.push({ sender: currentUser, text: text, reply: "" });
-            alert("Správa bola odoslaná.");
+            if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
+            privateMessages[currentUser].push({ sender: currentUser, text: text, reply: "" });
+            alert("Správa bola odoslaná inšpektorke.");
             openInbox();
         }
     }
 
-    function requestPassword() {
-        let text = "Prosím o vytvorenie osobného hesla pre moje konto (" + currentUser + ").";
-        messages.push({ sender: currentUser, text: text, reply: "" });
+    function requestStudentPassword() {
+        let text = "Prosím o vytvorenie osobného hesla pre moje konto.";
+        if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
+        privateMessages[currentUser].push({ sender: currentUser, text: text, reply: "" });
         alert("Žiadosť o heslo bola odoslaná inšpektorke Olívii.");
         openInbox();
     }
 
-    function replyMessagePrompt() {
-        let actionChoice = prompt("Zadajte:\n1 - Odpovedať na správu\n2 - Nastaviť nové heslo pre žiaka");
-        if (actionChoice === "1") {
-            let idxInput = prompt("Zadajte číslo správy (1 až " + messages.length + "):");
-            let idx = parseInt(idxInput) - 1;
-            if (!isNaN(idx) && messages[idx]) {
-                let replyText = prompt("Zadajte text odpovede od Olívie:");
-                if (replyText) {
-                    messages[idx].reply = replyText;
-                    alert("Odpoveď bola odoslaná.");
-                    openInbox();
-                }
-            } else { alert("Neplatná správa."); }
-        } else if (actionChoice === "2") {
-            let studentName = prompt("Zadajte meno žiaka, ktorému chcete nastaviť heslo (Timotej / Eliška / Rebeka):");
-            if (passwords.hasOwnProperty(studentName) && studentName !== "Olívia") {
-                let newPass = prompt("Zadajte nové heslo pre žiaka " + studentName + ":");
-                if (newPass) {
-                    passwords[studentName] = newPass;
-                    alert("Heslo pre " + studentName + " bolo úspešne vytvorené a nastavené.");
-                }
-            } else {
-                alert("Neznámy žiak.");
+    function inspectorReply(studentName) {
+        let replyText = prompt("Zadajte odpoveď pre žiaka " + studentName + ":");
+        if (replyText) {
+            let chat = privateMessages[studentName];
+            if (chat && chat.length > 0) {
+                chat[chat.length - 1].reply = replyText;
+                alert("Odpoveď bola odoslaná.");
+                showInspectorChat(studentName);
             }
+        }
+    }
+
+    function inspectorSetPassword(studentName) {
+        let newPass = prompt("Zadajte nové heslo pre žiaka " + studentName + ":");
+        if (newPass) {
+            passwords[studentName] = newPass;
+            alert("Heslo pre " + studentName + " bolo nastavené.");
         }
     }
 
