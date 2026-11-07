@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPage - Timotej Šmirina</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #121a24;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            max-height: 800px;
+            background-color: #121a24;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .header {
+            background-color: #182624;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #263749;
+        }
+        .header h2 { margin: 0; font-size: 18px; color: #fff; }
+        .header p { margin: 5px 0 0 0; font-size: 12px; color: #8c9baf; }
+        
+        .role-bar {
+            background-color: #0066cc;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .tile {
+            background-color: #233042;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .tile:hover { background-color: #2e3f57; }
+        .tile h3 { margin: 0; font-size: 13px; color: #ff8c5a; }
+        .tile p { margin: 5px 0 0 0; font-size: 11px; color: #b4becd; }
+
+        /* Modálne okno */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a2533;
+            padding: 20px;
+            width: 85%;
+            max-width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .modal-content h3 { margin-top: 0; color: #ff8c5a; }
+        .modal-content textarea, .modal-content input {
+            width: 100%;
+            background: #233042;
+            color: white;
+            border: 1px solid #3b4e6a;
+            padding: 8px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-buttons button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal-buttons button.close-btn { background: #444; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h2 id="student-name">Timotej Šmirina</h2>
+        <p id="sub-info">Žiak • oapk • II.C | Inšpektorka: Mgr. Olívia Šmirinová</p>
+    </div>
+    
+    <div class="role-bar" onclick="toggleRole()">
+        Mód: <span id="current-role">Žiak</span> (Klikni pre prepnutie)
+    </div>
+
+    <div class="grid">
+        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, updateSchedule)">
+            <h3>Rozvrh / ETK</h3>
+            <p>Sobota a Nedeľa: Autoškola</p>
+        </div>
+        <div class="tile" onclick="openInfo('Moje hodiny', 'Predmet: Autoškola\nInšpektorka: Mgr. Olívia Šmirinová\nTeória a praktické jazdy cez víkend.')">
+            <h3>Moje hodiny</h3>
+            <p>Prehľad jázd a teórie</p>
+        </div>
+        <div class="tile" onclick="openGrades()">
+            <h3>Známky</h3>
+            <p>Autoškola: Timotej, Rebeka, Eliška</p>
+        </div>
+        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, updateExams)">
+            <h3>DÚ / písomky</h3>
+            <p>Termíny písomiek a testov</p>
+        </div>
+        <div class="tile" onclick="openInfo('Učivo', 'Preberáme križovatky a prednosť v jazde.')">
+            <h3>Učivo</h3>
+            <p>Záznamy z vyučovania</p>
+        </div>
+        <div class="tile" onclick="openInfo('Výsledky', 'Všetci účastníci zatiaľ úspešne napredujú.')">
+            <h3>Výsledky</h3>
+            <p>Priebežné hodnotenie</p>
+        </div>
+        <div class="tile" onclick="openInfo('Dochádzka', 'Účasť na hodinách autoškoly je 100%.')">
+            <h3>Dochádzka</h3>
+            <p>Záznamy účasti</p>
+        </div>
+        <div class="tile" onclick="openInfo('Platby', 'Kurz je plne uhradený.')">
+            <h3>Platby</h3>
+            <p>Poplatky za kurz</p>
+        </div>
+        <div class="tile" onclick="openInfo('Suplovanie', 'Žiadne zmeny v harmonogramu.')">
+            <h3>Suplovanie</h3>
+            <p>Žiadne zmeny</p>
+        </div>
+        <div class="tile" onclick="openInfo('Jedálny lístok', 'Jedáleň nie je aktívna. Kredit: 0 €')">
+            <h3>Jedálny lístok</h3>
+            <p>Kredit: 0 €</p>
+        </div>
+        <div class="tile" onclick="openInfo('Fotky / Nástenka', 'Nové materiály od inšpektorky.')">
+            <h3>Fotky / Nástenka</h3>
+            <p>Zdieľané materiály</p>
+        </div>
+        <div class="tile" onclick="sendMessage()">
+            <h3>Správy</h3>
+            <p>Poslať správu inšpektorke</p>
+        </div>
+    </div>
+</div>
+
+<!-- Všeobecné modálne okno -->
+<div id="custom-modal" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-title">Názov</h3>
+        <div id="modal-body"></div>
+        <div class="modal-buttons">
+            <button id="modal-save" style="display:none;" onclick="saveModalAction()">Uložiť</button>
+            <button class="close-btn" onclick="closeModal()">Zatvoriť</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let userRole = "Žiak";
+    let inspectorPassword = "1055";
+    let scheduleText = "Sobota: 1. Teória predpisov | 2. Trenažér\nNedeľa: 1. Cvičná jazda v meste | 2. Záverečné testy";
+    let examsText = "• 15.11.2026: Písomný test z pravidiel cestnej premávky\n• 22.11.2026: Praktická jazda pod dohľadom inšpektorky";
+    
+    let gradesData = [
+        { name: "Timotej", grades: "1, 1, 2" },
+        { name: "Rebeka", grades: "1, 2, 1" },
+        { name: "Eliška", grades: "1, 1, 1" }
+    ];
+
+    let currentSaveCallback = null;
+
+    function toggleRole() {
+        if (userRole === "Žiak") {
+            let pass = prompt("Zadajte heslo pre inšpektorku:");
+            if (pass === inspectorPassword) {
+                userRole = "Inšpektorka";
+                document.getElementById("current-role").innerText = "Inšpektorka";
+                alert("Úspešne prihlásená ako Inšpektorka.");
+            } else if (pass !== null) {
+                alert("Nesprávne heslo!");
+            }
+        } else {
+            let choice = prompt("Zadajte: \n1 - Prepnúť na Žiaka\n2 - Zmeniť heslo inšpektorky");
+            if (choice === "1") {
+                userRole = "Žiak";
+                document.getElementById("current-role").innerText = "Žiak";
+            } else if (choice === "2") {
+                let oldP = prompt("Zadajte staré heslo:");
+                if (oldP === inspectorPassword) {
+                    let newP = prompt("Zadajte nové heslo:");
+                    if (newP) {
+                        inspectorPassword = newP;
+                        alert("Heslo bolo úspešne zmenené.");
+                    }
+                } else {
+                    alert("Nesprávne staré heslo!");
+                }
+            }
+        }
+    }
+
+    function openInfo(title, text) {
+        document.getElementById("modal-title").innerText = title;
+        document.getElementById("modal-body").innerHTML = `<p style="white-space: pre-line; color: #fff;">${text}</p>`;
+        document.getElementById("modal-save").style.display = "none";
+        document.getElementById("custom-modal").style.display = "flex";
+        currentSaveCallback = null;
+    }
+
+    function openModal(title, text, editable, saveCallback) {
+        document.getElementById("modal-title").innerText = title;
+        let isEditable = (userRole === "Inšpektorka" && editable);
+        
+        if (isEditable) {
+            document.getElementById("modal-body").innerHTML = `<textarea id="modal-textarea" rows="5">${text}</textarea>`;
+            document.getElementById("modal-save").style.display = "block";
+            currentSaveCallback = saveCallback;
+        } else {
+            document.getElementById("modal-body").innerHTML = `<p style="white-space: pre-line; color: #fff;">${text}</p><br><p style="font-size:11px; color:#888;">(Žiak sa môže na položku iba pozerať)</p>`;
+            document.getElementById("modal-save").style.display = "none";
+        }
+        document.getElementById("custom-modal").style.display = "flex";
+    }
+
+    function saveModalAction() {
+        let val = document.getElementById("modal-textarea").value;
+        if (currentSaveCallback) {
+            currentSaveCallback(val);
+        }
+        closeModal();
+    }
+
+    function updateSchedule(val) { scheduleText = val; alert("Rozvrh aktualizovaný!"); }
+    function updateExams(val) { examsText = val; alert("Písomky aktualizované!"); }
+
+    function openGrades() {
+        let html = `<table style="width:100%; color:white; border-collapse:collapse; font-size:12px;">
+            <tr style="border-bottom:1px solid #444;"><th style="text-align:left;">Žiak</th><th style="text-align:left;">Známky</th></tr>`;
+        gradesData.forEach((g, idx) => {
+            html += `<tr style="border-bottom:1px solid #333;"><td>${g.name}</td><td>${g.grades}</td></tr>`;
+        });
+        html += `</table>`;
+
+        if (userRole === "Inšpektorka") {
+            html += `<br><button onclick="editGrades()" style="background:#0066cc; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Upraviť známky</button>`;
+        }
+
+        document.getElementById("modal-title").innerText = "Známky - Autoškola";
+        document.getElementById("modal-body").innerHTML = html;
+        document.getElementById("modal-save").style.display = "none";
+        document.getElementById("custom-modal").style.display = "flex";
+    }
+
+    function editGrades() {
+        let name = prompt("Zadajte meno žiaka (Timotej / Rebeka / Eliška):");
+        let student = gradesData.find(g => g.name.toLowerCase() === (name || "").toLowerCase());
+        if (student) {
+            let newG = prompt(`Zadajte nové známky pre ${student.name}:`, student.grades);
+            if (newG !== null) {
+                student.grades = newG;
+                alert("Známky boli zmenené.");
+                openGrades();
+            }
+        } else if (name) {
+            alert("Žiak nenájdený.");
+        }
+    }
+
+    function sendMessage() {
+        let msg = prompt("Napíšte správu pre pani inšpektorku (Mgr. Olívia Šmirinová):");
+        if (msg) alert("Správa bola úspešne odoslaná inšpektorke.");
+    }
+
+    function closeModal() {
+        document.getElementById("custom-modal").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
