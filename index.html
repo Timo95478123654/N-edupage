@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPage - Autoškola</title>
+    <!-- Načítanie Supabase knižnice -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             margin: 0; padding: 0;
@@ -298,21 +300,22 @@
 
     let currentSaveCallback = null;
 
-    // Pripojenie na tvoj vlastný server na Renderi
-    const SERVER_URL = "https://edupage-autoskola-server.onrender.com";
+    // --- SUPABASE NASTAVENIE ---
+    const SUPABASE_URL = "https://ftfqqpxvceutrcxezeod.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0ZnFxcHh2Y2V1dHJjeGV6ZW9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwNzM4NzAsImV4cCI6MjEwOTY0OTg3MH0.PaKtvp1dji3_Ct6C_9mpSrp-QBCg3PjexUa7JTsyDUU";
+    
+    const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function loadFromServer() {
         try {
-            let res = await fetch(SERVER_URL + "/api/data");
-            if (res.ok) {
-                let json = await res.json();
-                if (json) {
-                    if (json.studentsData) studentsData = json.studentsData;
-                    if (json.privateMessages) privateMessages = json.privateMessages;
-                    if (json.passwords) passwords = json.passwords;
-                    if (json.scheduleText) scheduleText = json.scheduleText;
-                    updateUIHeaders();
-                }
+            let { data, error } = await _supabase.from('app_data').select('*').eq('id', 'main_state').single();
+            if (data && data.content) {
+                let json = data.content;
+                if (json.studentsData) studentsData = json.studentsData;
+                if (json.privateMessages) privateMessages = json.privateMessages;
+                if (json.passwords) passwords = json.passwords;
+                if (json.scheduleText) scheduleText = json.scheduleText;
+                updateUIHeaders();
             }
         } catch(e) {}
     }
@@ -329,20 +332,23 @@
         localStorage.setItem("userRole", userRole);
 
         try {
-            await fetch(SERVER_URL + "/api/data", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
+            await _supabase.from('app_data').upsert({ id: 'main_state', content: payload });
         } catch(e) {}
     }
 
-    // Automatická kontrola servera každé 3 sekundy
-    setInterval(loadFromServer, 3000);
+    setInterval(loadFromServer, 2000);
 
     window.onload = async function() {
         await loadFromServer();
         updateUIHeaders();
+
+        try {
+            _supabase.channel('public:app_data')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'app_data' }, payload => {
+                    loadFromServer();
+                })
+                .subscribe();
+        } catch(e) {}
     }
 
     function toggleMenu() {
@@ -447,7 +453,7 @@
         if (currentSaveCallback) { 
             currentSaveCallback(val); 
             saveAndSync();
-            alert("Potvrdené a odoslané na server pre všetky zariadenia!"); 
+            alert("Potvrdené a okamžite zosynchronizované v cloude!"); 
         }
         closeModal();
     }
@@ -527,7 +533,7 @@
         });
 
         saveAndSync();
-        alert("Potvrdené! Zmeny známok boli uložené a odoslané na server pre všetky zariadenia.");
+        alert("Potvrdené! Zmeny známok boli uložené do databázy pre všetky zariadenia.");
         openGrades();
     }
 
@@ -614,7 +620,7 @@
             });
 
             saveAndSync();
-            alert("Potvrdené! Hromadná správa bola odoslaná a uložená na serveri.");
+            alert("Potvrdené! Hromadná správa bola odoslaná do databázy.");
             openInbox();
         }
     }
@@ -664,7 +670,7 @@
             if (chat && chat.length > 0) {
                 chat[chat.length - 1].reply = replyText;
                 saveAndSync();
-                alert("Potvrdené a odoslané na server!");
+                alert("Potvrdené a uložené v databáze!");
                 showInspectorChat(studentName);
             }
         }
