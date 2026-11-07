@@ -129,7 +129,7 @@
             <div class="tile-icon-box" style="background: rgba(245,158,11,0.15); color: #f59e0b;">✉️</div>
             <div class="tile-content">
                 <h3>Správy</h3>
-                <p>Súkromný chat</p>
+                <p>Súkromný chat a notifikácie</p>
             </div>
         </div>
         
@@ -308,7 +308,18 @@
         localStorage.setItem("privateMessages", JSON.stringify(privateMessages));
     }
 
-    // Inicializácia hlavičiek pri štarte
+    // Automatická synchronizácia každých 10 sekúnd
+    setInterval(function() {
+        let savedStudents = localStorage.getItem("studentsData");
+        let savedMessages = localStorage.getItem("privateMessages");
+        if (savedStudents) {
+            studentsData = JSON.parse(savedStudents);
+        }
+        if (savedMessages) {
+            privateMessages = JSON.parse(savedMessages);
+        }
+    }, 10000);
+
     window.onload = function() {
         updateUIHeaders();
     }
@@ -447,7 +458,6 @@
         document.getElementById("custom-modal").style.display = "flex";
     }
 
-    // Tlačítkové okno pre správu známok (bez promptu)
     function openManageGrades(studentName) {
         let html = '<p>Správa známok pre: <strong>' + studentName + '</strong></p>';
         html += '<p style="font-size:11px; color:#aaa;">Pridať známku kliknutím:</p>';
@@ -470,21 +480,39 @@
 
     function addGrade(studentName, gradeNum) {
         studentsData[studentName].grades.push(gradeNum);
+        
+        // Automatická notifikácia do správy žiakovi
+        if (!privateMessages[studentName]) privateMessages[studentName] = [];
+        privateMessages[studentName].push({
+            sender: "Inšpektorka Olívia",
+            text: "Nová známka: " + gradeNum,
+            reply: "Priebežný priemer bol aktualizovaný."
+        });
+
         saveStorage();
         openManageGrades(studentName);
     }
 
     function removeGrade(studentName, index) {
+        let removed = studentsData[studentName].grades[index];
         studentsData[studentName].grades.splice(index, 1);
+        
+        // Automatická notifikácia do správy žiakovi
+        if (!privateMessages[studentName]) privateMessages[studentName] = [];
+        privateMessages[studentName].push({
+            sender: "Inšpektorka Olívia",
+            text: "Zmazaná známka: " + removed,
+            reply: "Hodnotenie bolo upravené."
+        });
+
         saveStorage();
         openManageGrades(studentName);
     }
 
-    // Tlačítkové okno pre správu správania (poznámka / pochvala)
     function openManageBehavior(studentName) {
         let html = '<p>Pridať záznam pre: <strong>' + studentName + '</strong></p>';
         html += '<button onclick="addBehaviorItem(\'' + studentName + '\', \'Pochvala\')" style="background:#4CAF50; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:8px; cursor:pointer;">✨ Pridať pochvalu</button>';
-        html += '<button onclick="addBehaviorItem(\' ' + studentName + '\', \'Poznámka\')" style="background:#ef4444; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:8px; cursor:pointer;">⚠️ Pridať poznámku</button>';
+        html += '<button onclick="addBehaviorItem(\'' + studentName + '\', \'Poznámka\')" style="background:#ef4444; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:8px; cursor:pointer;">⚠️ Pridať poznámku</button>';
         html += '<br><button onclick="openGrades()" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Späť</button>';
 
         document.getElementById("modal-body").innerHTML = html;
@@ -494,9 +522,19 @@
         let cleanName = studentName.trim();
         let desc = prompt("Zadajte text pre " + type.toLowerCase() + ":");
         if (desc) {
-            studentsData[cleanName].behavior.push(type + ": " + desc);
+            let record = type + ": " + desc;
+            studentsData[cleanName].behavior.push(record);
+            
+            // Automatická notifikácia do správy žiakovi
+            if (!privateMessages[cleanName]) privateMessages[cleanName] = [];
+            privateMessages[cleanName].push({
+                sender: "Inšpektorka Olívia",
+                text: "Nový záznam v správaní: " + record,
+                reply: "Prosím venujte tomu pozornosť."
+            });
+
             saveStorage();
-            alert(type + " bola úspešne pridaná a uložená.");
+            alert(type + " bola úspešne pridaná, uložená a odoslaná do správ.");
             openGrades();
         }
     }
