@@ -71,8 +71,11 @@
         .drawer.open { left: 0; }
         .drawer-header {
             background-color: #121a24; padding: 20px 15px; border-bottom: 1px solid #263749;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .drawer-header h3 { margin: 0; color: #4CAF50; font-size: 16px; }
+        .close-drawer-btn { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        
         .drawer-section { padding: 10px 15px; font-size: 11px; color: #8c9baf; text-transform: uppercase; font-weight: bold; }
         .drawer-item {
             padding: 12px 15px; font-size: 13px; color: #fff; border-bottom: 1px solid #202e3d;
@@ -225,8 +228,11 @@
 
 <div id="drawer" class="drawer">
     <div class="drawer-header">
-        <h3 style="color: #4CAF50;">🏠 EduPage</h3>
-        <p id="drawer-user-name" style="margin:5px 0 0; font-size:12px; color:#b4becd;">Timotej</p>
+        <div>
+            <h3 style="color: #4CAF50;">🏠 EduPage</h3>
+            <p id="drawer-user-name" style="margin:5px 0 0; font-size:12px; color:#b4becd;">Timotej</p>
+        </div>
+        <button class="close-drawer-btn" onclick="toggleMenu()">Odísť ✕</button>
     </div>
     <div class="drawer-section">Kontá</div>
     <div class="drawer-item" onclick="toggleMenu(); openAccountSwitch()">👥 Prepnúť účet</div>
@@ -308,16 +314,17 @@
         localStorage.setItem("privateMessages", JSON.stringify(privateMessages));
     }
 
-    // Automatická synchronizácia každých 10 sekúnd
+    // Automatická synchronizácia pre každé zariadenie každých 10 sekúnd
     setInterval(function() {
         let savedStudents = localStorage.getItem("studentsData");
         let savedMessages = localStorage.getItem("privateMessages");
-        if (savedStudents) {
-            studentsData = JSON.parse(savedStudents);
-        }
-        if (savedMessages) {
-            privateMessages = JSON.parse(savedMessages);
-        }
+        let savedSchedule = localStorage.getItem("scheduleText");
+        
+        if (savedStudents) studentsData = JSON.parse(savedStudents);
+        if (savedMessages) privateMessages = JSON.parse(savedMessages);
+        if (savedSchedule) scheduleText = savedSchedule;
+        
+        updateUIHeaders();
     }, 10000);
 
     window.onload = function() {
@@ -481,12 +488,11 @@
     function addGrade(studentName, gradeNum) {
         studentsData[studentName].grades.push(gradeNum);
         
-        // Automatická notifikácia do správy žiakovi
         if (!privateMessages[studentName]) privateMessages[studentName] = [];
         privateMessages[studentName].push({
             sender: "Inšpektorka Olívia",
             text: "Nová známka: " + gradeNum,
-            reply: "Priebežný priemer bol aktualizovaný."
+            reply: "Priebežný priemer bol automaticky aktualizovaný."
         });
 
         saveStorage();
@@ -497,7 +503,6 @@
         let removed = studentsData[studentName].grades[index];
         studentsData[studentName].grades.splice(index, 1);
         
-        // Automatická notifikácia do správy žiakovi
         if (!privateMessages[studentName]) privateMessages[studentName] = [];
         privateMessages[studentName].push({
             sender: "Inšpektorka Olívia",
@@ -525,7 +530,6 @@
             let record = type + ": " + desc;
             studentsData[cleanName].behavior.push(record);
             
-            // Automatická notifikácia do správy žiakovi
             if (!privateMessages[cleanName]) privateMessages[cleanName] = [];
             privateMessages[cleanName].push({
                 sender: "Inšpektorka Olívia",
@@ -542,10 +546,18 @@
     function openInbox() {
         let html = '';
         if (userRole === "Inšpektorka") {
-            html += '<p style="font-size:11px; color:#8c9baf;">Vyberte žiaka, ktorého správy chcete zobraziť:</p>';
-            html += '<button onclick="showInspectorChat(\'Timotej\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">💬 Chat s Timotejom</button>';
-            html += '<button onclick="showInspectorChat(\'Eliška\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">💬 Chat s Eliškou</button>';
-            html += '<button onclick="showInspectorChat(\'Rebeka\')" style="background:#233042; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">💬 Chat s Rebekou</button>';
+            html += '<p style="font-size:11px; color:#8c9baf;">Hromadná správa viacerým žiakom:</p>';
+            html += '<div style="margin-bottom:10px; background:#233042; padding:8px; border-radius:4px;">';
+            html += '<label><input type="checkbox" id="chk-timotej" checked> Timotej</label><br>';
+            html += '<label><input type="checkbox" id="chk-eliska" checked> Eliška</label><br>';
+            html += '<label><input type="checkbox" id="chk-rebeka" checked> Rebeka</label><br>';
+            html += '<button onclick="sendBulkMessage()" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-top:5px; cursor:pointer;">Odoslať vybraným žiakom</button>';
+            html += '</div>';
+            
+            html += '<p style="font-size:11px; color:#8c9baf;">Alebo kliknite na individuálny chat:</p>';
+            html += '<button onclick="showInspectorChat(\'Timotej\')" style="background:#233042; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:4px; cursor:pointer;">💬 Chat s Timotejom</button>';
+            html += '<button onclick="showInspectorChat(\'Eliška\')" style="background:#233042; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:4px; cursor:pointer;">💬 Chat s Eliškou</button>';
+            html += '<button onclick="showInspectorChat(\'Rebeka\')" style="background:#233042; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:4px; cursor:pointer;">💬 Chat s Rebekou</button>';
         } else {
             let chat = privateMessages[currentUser] || [];
             html += '<div style="max-height:200px; overflow-y:auto; margin-bottom:10px;">';
@@ -564,6 +576,29 @@
         document.getElementById("modal-body").innerHTML = html;
         document.getElementById("modal-save").style.display = "none";
         document.getElementById("custom-modal").style.display = "flex";
+    }
+
+    function sendBulkMessage() {
+        let text = prompt("Zadajte text hromadnej správy od inšpektorky Olívie:");
+        if (text) {
+            let targets = [];
+            if (document.getElementById("chk-timotej").checked) targets.push("Timotej");
+            if (document.getElementById("chk-eliska").checked) targets.push("Eliška");
+            if (document.getElementById("chk-rebeka").checked) targets.push("Rebeka");
+
+            targets.forEach(function(sName) {
+                if (!privateMessages[sName]) privateMessages[sName] = [];
+                privateMessages[sName].push({
+                    sender: "Inšpektorka Olívia (Hromadná správa)",
+                    text: text,
+                    reply: "Odoslané hromadne."
+                });
+            });
+
+            saveStorage();
+            alert("Hromadná správa bola úspešne odoslaná vybraným žiakom.");
+            openInbox();
+        }
     }
 
     function showInspectorChat(studentName) {
