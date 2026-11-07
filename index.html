@@ -314,7 +314,7 @@
         localStorage.setItem("privateMessages", JSON.stringify(privateMessages));
     }
 
-    // Automatická synchronizácia každých 10 sekúnd
+    // Automatická okamžitá synchronizácia každých 5 sekúnd pre všetky zariadenia vrátane iPhone
     setInterval(function() {
         let savedStudents = localStorage.getItem("studentsData");
         let savedMessages = localStorage.getItem("privateMessages");
@@ -327,7 +327,7 @@
         if (savedPasswords) passwords = JSON.parse(savedPasswords);
         
         updateUIHeaders();
-    }, 10000);
+    }, 5000);
 
     window.onload = function() {
         updateUIHeaders();
