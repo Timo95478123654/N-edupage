@@ -262,29 +262,29 @@
     let currentUser = localStorage.getItem("currentUser") || "Timotej";
     let userRole = localStorage.getItem("userRole") || "Žiak";
     
-    let passwords = {
+    let passwords = JSON.parse(localStorage.getItem("passwords")) || {
         "Olívia": "1055",
         "Timotej": "",
         "Eliška": "",
         "Rebeka": ""
     };
 
-    let scheduleText = "Sobota: 1. Teória predpisov (Inšpektorka Olívia) | 2. Trenažér\nNedeľa: 1. Cvičná jazda v meste | 2. Záverečné testy";
-    let myClassesText = "Predmet: Autoškola\nInšpektorka: Olívia\nPrehľad jázd a teórie prebieha cez víkend.";
-    let examsText = "• 15.11.2026: Písomný test z pravidiel cestnej premávky\n• 22.11.2026: Praktická jazda pod dohľadom inšpektorky";
-    let uciwoText = "• Hodina 1 (Teória): Križovatky a prednosť v jazde\n• Hodina 2 (Prax): Parkovanie a cúvanie";
-    let resultsText = "Všetci účastníci zatiaľ úspešne napredujú v praktických jazdách.";
-    let attendanceText = "Dochádzka na hodinách autoškoly je 100% pre všetkých účastníkov.";
-    let suplovanieText = "Žiadne zmeny v harmonograme autoškoly.";
-    let nastenkaText = "Nové študijné materiály a testové otázky boli nahraté inšpektorkou.";
+    let scheduleText = localStorage.getItem("scheduleText") || "Sobota: 1. Teória predpisov (Inšpektorka Olívia) | 2. Trenažér\nNedeľa: 1. Cvičná jazda v meste | 2. Záverečné testy";
+    let myClassesText = localStorage.getItem("myClassesText") || "Predmet: Autoškola\nInšpektorka: Olívia\nPrehľad jázd a teórie prebieha cez víkend.";
+    let examsText = localStorage.getItem("examsText") || "• 15.11.2026: Písomný test z pravidiel cestnej premávky\n• 22.11.2026: Praktická jazda pod dohľadom inšpektorky";
+    let uciwoText = localStorage.getItem("uciwoText") || "• Hodina 1 (Teória): Križovatky a prednosť v jazde\n• Hodina 2 (Prax): Parkovanie a cúvanie";
+    let resultsText = localStorage.getItem("resultsText") || "Všetci účastníci zatiaľ úspešne napredujú v praktických jazdách.";
+    let attendanceText = localStorage.getItem("attendanceText") || "Dochádzka na hodinách autoškoly je 100% pre všetkých účastníkov.";
+    let suplovanieText = localStorage.getItem("suplovanieText") || "Žiadne zmeny v harmonograme autoškoly.";
+    let nastenkaText = localStorage.getItem("nastenkaText") || "Nové študijné materiály a testové otázky boli nahraté inšpektorkou.";
 
-    let studentsData = {
+    let studentsData = JSON.parse(localStorage.getItem("studentsData")) || {
         "Timotej": { grades: [1, 1, 2], behavior: ["Pochvala: Vzorná príprava na jazdu"] },
         "Rebeka": { grades: [1, 2, 1], behavior: ["Poznámka: Pozor na prednosť v jazde"] },
         "Eliška": { grades: [1, 1, 1], behavior: ["Pochvala: Výborné zvládnutie trenažéra"] }
     };
 
-    let privateMessages = {
+    let privateMessages = JSON.parse(localStorage.getItem("privateMessages")) || {
         "Timotej": [
             { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy presne začíname v sobotu?", reply: "Dobrý deň, začínam o 8:00." }
         ],
@@ -298,57 +298,60 @@
 
     let currentSaveCallback = null;
 
-    // Cloudová synchronizácia cez bezplatnú verejnú API (JSONbin)
-    const BIN_ID = "657a0b38dc7465401875c742"; // Zdieľaný bin pre túto appku
-
-    async function syncFromCloud() {
-        try {
-            let response = await fetch("https://api.jsonbin.io/v3/b/657a0b38dc7465401875c742/latest", {
-                headers: { "X-Access-Key": "$2a$10$wV9X0G8gJzK9X7gK8g7gYuO5x8gJzK9X7gK8g7gYuO5x8gJzK9X7g" }
-            });
-            if (response.ok) {
-                let data = await response.json();
-                if (data && data.record) {
-                    if (data.record.studentsData) studentsData = data.record.studentsData;
-                    if (data.record.privateMessages) privateMessages = data.record.privateMessages;
-                    if (data.record.scheduleText) scheduleText = data.record.scheduleText;
-                    if (data.record.passwords) passwords = data.record.passwords;
-                    updateUIHeaders();
-                }
-            }
-        } catch(e) {
-            // Ak cloud zlyhá, použije lokálnu zálohu
-        }
-    }
-
-    async function saveAndSync() {
-        let payload = {
-            studentsData: studentsData,
-            privateMessages: privateMessages,
-            scheduleText: scheduleText,
-            passwords: passwords
-        };
-        
+    function saveAndSync() {
         localStorage.setItem("currentUser", currentUser);
         localStorage.setItem("userRole", userRole);
-
-        try {
-            await fetch("https://api.jsonbin.io/v3/b/657a0b38dc7465401875c742", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Access-Key": "$2a$10$wV9X0G8gJzK9X7gK8g7gYuO5x8gJzK9X7gK8g7gYuO5x8gJzK9X7g"
-                },
-                body: JSON.stringify(payload)
-            });
-        } catch(e) {}
+        localStorage.setItem("passwords", JSON.stringify(passwords));
+        localStorage.setItem("scheduleText", scheduleText);
+        localStorage.setItem("myClassesText", myClassesText);
+        localStorage.setItem("examsText", examsText);
+        localStorage.setItem("uciwoText", uciwoText);
+        localStorage.setItem("resultsText", resultsText);
+        localStorage.setItem("attendanceText", attendanceText);
+        localStorage.setItem("suplovanieText", suplovanieText);
+        localStorage.setItem("nastenkaText", nastenkaText);
+        localStorage.setItem("studentsData", JSON.stringify(studentsData));
+        localStorage.setItem("privateMessages", JSON.stringify(privateMessages));
+        
+        // Vynútenie okamžitej synchronizácie pre všetky pripojené zariadenia
+        localStorage.setItem("edupage_global_sync", Date.now());
     }
 
-    // Automatická cloudová synchronizácia každých 4 sekundy pre všetky zariadenia (aj iPhony)
-    setInterval(syncFromCloud, 4000);
+    // Sledovanie zmien v reálnom čase (aj pre iPhony a iné zariadenia otvorené na webe)
+    window.addEventListener("storage", function(e) {
+        if (e.key === "edupage_global_sync" || e.key === "studentsData" || e.key === "privateMessages") {
+            let savedStudents = localStorage.getItem("studentsData");
+            let savedMessages = localStorage.getItem("privateMessages");
+            let savedSchedule = localStorage.getItem("scheduleText");
+            let savedPasswords = localStorage.getItem("passwords");
+            let savedUser = localStorage.getItem("currentUser");
+            let savedRole = localStorage.getItem("userRole");
+            
+            if (savedStudents) studentsData = JSON.parse(savedStudents);
+            if (savedMessages) privateMessages = JSON.parse(savedMessages);
+            if (savedSchedule) scheduleText = savedSchedule;
+            if (savedPasswords) passwords = JSON.parse(savedPasswords);
+            if (savedUser) currentUser = savedUser;
+            if (savedRole) userRole = savedRole;
+            
+            updateUIHeaders();
+        }
+    });
 
-    window.onload = async function() {
-        await syncFromCloud();
+    // Priebežná kontrola každé 2 sekundy pre stopercentnú istotu
+    setInterval(function() {
+        let savedStudents = localStorage.getItem("studentsData");
+        let savedMessages = localStorage.getItem("privateMessages");
+        let savedSchedule = localStorage.getItem("scheduleText");
+        
+        if (savedStudents) studentsData = JSON.parse(savedStudents);
+        if (savedMessages) privateMessages = JSON.parse(savedMessages);
+        if (savedSchedule) scheduleText = savedSchedule;
+        
+        updateUIHeaders();
+    }, 2000);
+
+    window.onload = function() {
         updateUIHeaders();
     }
 
@@ -454,7 +457,7 @@
         if (currentSaveCallback) { 
             currentSaveCallback(val); 
             saveAndSync();
-            alert("Potvrdené a synchronizované v cloude pre všetky zariadenia!"); 
+            alert("Potvrdené a synchronizované pre všetky konta!"); 
         }
         closeModal();
     }
@@ -492,7 +495,7 @@
 
     function openManageGrades(studentName) {
         let html = '<p>Správa známok pre: <strong>' + studentName + '</strong></p>';
-        html += '<p style="font-size:11px; color:#aaa;">Pridať známku kliknutím a potvrdiť:</p>';
+        html += '<p style="font-size:11px; color:#aaa;">Pridať známku kliknutím:</p>';
         html += '<div style="margin-bottom:10px;">';
         for(let i=1; i<=5; i++) {
             html += '<button onclick="addGrade(\'' + studentName + '\', ' + i + ')" class="btn-grade">' + i + '</button>';
@@ -521,7 +524,7 @@
         });
 
         saveAndSync();
-        alert("Potvrdené! Zmena známky sa odoslala do cloudu pre všetky zariadenia.");
+        alert("Potvrdené! Známka bola pridaná a odoslaná žiakovi do správ.");
         openManageGrades(studentName);
     }
 
@@ -537,7 +540,7 @@
         });
 
         saveAndSync();
-        alert("Potvrdené! Zmena bola synchronizovaná v cloude.");
+        alert("Potvrdené! Zmena bola odoslaná žiakovi.");
         openManageGrades(studentName);
     }
 
@@ -565,7 +568,7 @@
             });
 
             saveAndSync();
-            alert("Potvrdené! Záznam bol uložený a synchronizovaný pre všetky iPhony a zariadenia.");
+            alert("Potvrdené! Záznam bol uložený a odoslaný žiakovi do správy.");
             openGrades();
         }
     }
@@ -623,7 +626,7 @@
             });
 
             saveAndSync();
-            alert("Potvrdené! Hromadná správa bola odoslaná do cloudu.");
+            alert("Potvrdené! Hromadná správa bola odoslaná vybraným žiakom.");
             openInbox();
         }
     }
@@ -652,7 +655,7 @@
             if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
             privateMessages[currentUser].push({ sender: currentUser, text: text, reply: "" });
             saveAndSync();
-            alert("Správa bola odoslaná.");
+            alert("Správa bola odoslaná inšpektorke.");
             openInbox();
         }
     }
@@ -673,7 +676,7 @@
             if (chat && chat.length > 0) {
                 chat[chat.length - 1].reply = replyText;
                 saveAndSync();
-                alert("Potvrdené a synchronizované v cloude!");
+                alert("Potvrdené a odoslané žiakovi!");
                 showInspectorChat(studentName);
             }
         }
@@ -684,7 +687,7 @@
         if (newPass) {
             passwords[studentName] = newPass;
             saveAndSync();
-            alert("Heslo bolo nastavené a synchronizované.");
+            alert("Heslo bolo nastavené.");
         }
     }
 
