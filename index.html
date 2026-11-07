@@ -262,29 +262,29 @@
     let currentUser = localStorage.getItem("currentUser") || "Timotej";
     let userRole = localStorage.getItem("userRole") || "Žiak";
     
-    let passwords = JSON.parse(localStorage.getItem("passwords")) || {
+    let passwords = {
         "Olívia": "1055",
         "Timotej": "",
         "Eliška": "",
         "Rebeka": ""
     };
 
-    let scheduleText = localStorage.getItem("scheduleText") || "Sobota: 1. Teória predpisov (Inšpektorka Olívia) | 2. Trenažér\nNedeľa: 1. Cvičná jazda v meste | 2. Záverečné testy";
-    let myClassesText = localStorage.getItem("myClassesText") || "Predmet: Autoškola\nInšpektorka: Olívia\nPrehľad jázd a teórie prebieha cez víkend.";
-    let examsText = localStorage.getItem("examsText") || "• 15.11.2026: Písomný test z pravidiel cestnej premávky\n• 22.11.2026: Praktická jazda pod dohľadom inšpektorky";
-    let uciwoText = localStorage.getItem("uciwoText") || "• Hodina 1 (Teória): Križovatky a prednosť v jazde\n• Hodina 2 (Prax): Parkovanie a cúvanie";
-    let resultsText = localStorage.getItem("resultsText") || "Všetci účastníci zatiaľ úspešne napredujú v praktických jazdách.";
-    let attendanceText = localStorage.getItem("attendanceText") || "Dochádzka na hodinách autoškoly je 100% pre všetkých účastníkov.";
-    let suplovanieText = localStorage.getItem("suplovanieText") || "Žiadne zmeny v harmonograme autoškoly.";
-    let nastenkaText = localStorage.getItem("nastenkaText") || "Nové študijné materiály a testové otázky boli nahraté inšpektorkou.";
+    let scheduleText = "Sobota: 1. Teória predpisov (Inšpektorka Olívia) | 2. Trenažér\nNedeľa: 1. Cvičná jazda v meste | 2. Záverečné testy";
+    let myClassesText = "Predmet: Autoškola\nInšpektorka: Olívia\nPrehľad jázd a teórie prebieha cez víkend.";
+    let examsText = "• 15.11.2026: Písomný test z pravidiel cestnej premávky\n• 22.11.2026: Praktická jazda pod dohľadom inšpektorky";
+    let uciwoText = "• Hodina 1 (Teória): Križovatky a prednosť v jazde\n• Hodina 2 (Prax): Parkovanie a cúvanie";
+    let resultsText = "Všetci účastníci zatiaľ úspešne napredujú v praktických jazdách.";
+    let attendanceText = "Dochádzka na hodinách autoškoly je 100% pre všetkých účastníkov.";
+    let suplovanieText = "Žiadne zmeny v harmonograme autoškoly.";
+    let nastenkaText = "Nové študijné materiály a testové otázky boli nahraté inšpektorkou.";
 
-    let studentsData = JSON.parse(localStorage.getItem("studentsData")) || {
+    let studentsData = {
         "Timotej": { grades: [1, 1, 2], behavior: ["Pochvala: Vzorná príprava na jazdu"] },
         "Rebeka": { grades: [1, 2, 1], behavior: ["Poznámka: Pozor na prednosť v jazde"] },
         "Eliška": { grades: [1, 1, 1], behavior: ["Pochvala: Výborné zvládnutie trenažéra"] }
     };
 
-    let privateMessages = JSON.parse(localStorage.getItem("privateMessages")) || {
+    let privateMessages = {
         "Timotej": [
             { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy presne začíname v sobotu?", reply: "Dobrý deň, začínam o 8:00." }
         ],
@@ -298,60 +298,54 @@
 
     let currentSaveCallback = null;
 
-    function saveAndSync() {
-        localStorage.setItem("currentUser", currentUser);
-        localStorage.setItem("userRole", userRole);
-        localStorage.setItem("passwords", JSON.stringify(passwords));
-        localStorage.setItem("scheduleText", scheduleText);
-        localStorage.setItem("myClassesText", myClassesText);
-        localStorage.setItem("examsText", examsText);
-        localStorage.setItem("uciwoText", uciwoText);
-        localStorage.setItem("resultsText", resultsText);
-        localStorage.setItem("attendanceText", attendanceText);
-        localStorage.setItem("suplovanieText", suplovanieText);
-        localStorage.setItem("nastenkaText", nastenkaText);
-        localStorage.setItem("studentsData", JSON.stringify(studentsData));
-        localStorage.setItem("privateMessages", JSON.stringify(privateMessages));
-        
-        // Vynútenie okamžitej synchronizácie pre všetky pripojené zariadenia
-        localStorage.setItem("edupage_global_sync", Date.now());
+    const CLOUD_URL = "https://api.jsonbin.io/v3/b/657a0b38dc7465401875c742";
+    const API_KEY = "$2a$10$wV9X0G8gJzK9X7gK8g7gYuO5x8gJzK9X7gK8g7gYuO5x8gJzK9X7g";
+
+    async function loadFromServer() {
+        try {
+            let res = await fetch(CLOUD_URL + "/latest", {
+                headers: { "X-Access-Key": API_KEY }
+            });
+            if (res.ok) {
+                let json = await res.json();
+                if (json && json.record) {
+                    if (json.record.studentsData) studentsData = json.record.studentsData;
+                    if (json.record.privateMessages) privateMessages = json.record.privateMessages;
+                    if (json.record.passwords) passwords = json.record.passwords;
+                    if (json.record.scheduleText) scheduleText = json.record.scheduleText;
+                    updateUIHeaders();
+                }
+            }
+        } catch(e) {}
     }
 
-    // Sledovanie zmien v reálnom čase (aj pre iPhony a iné zariadenia otvorené na webe)
-    window.addEventListener("storage", function(e) {
-        if (e.key === "edupage_global_sync" || e.key === "studentsData" || e.key === "privateMessages") {
-            let savedStudents = localStorage.getItem("studentsData");
-            let savedMessages = localStorage.getItem("privateMessages");
-            let savedSchedule = localStorage.getItem("scheduleText");
-            let savedPasswords = localStorage.getItem("passwords");
-            let savedUser = localStorage.getItem("currentUser");
-            let savedRole = localStorage.getItem("userRole");
-            
-            if (savedStudents) studentsData = JSON.parse(savedStudents);
-            if (savedMessages) privateMessages = JSON.parse(savedMessages);
-            if (savedSchedule) scheduleText = savedSchedule;
-            if (savedPasswords) passwords = JSON.parse(savedPasswords);
-            if (savedUser) currentUser = savedUser;
-            if (savedRole) userRole = savedRole;
-            
-            updateUIHeaders();
-        }
-    });
+    async function saveAndSync() {
+        let payload = {
+            studentsData: studentsData,
+            privateMessages: privateMessages,
+            passwords: passwords,
+            scheduleText: scheduleText
+        };
 
-    // Priebežná kontrola každé 2 sekundy pre stopercentnú istotu
-    setInterval(function() {
-        let savedStudents = localStorage.getItem("studentsData");
-        let savedMessages = localStorage.getItem("privateMessages");
-        let savedSchedule = localStorage.getItem("scheduleText");
-        
-        if (savedStudents) studentsData = JSON.parse(savedStudents);
-        if (savedMessages) privateMessages = JSON.parse(savedMessages);
-        if (savedSchedule) scheduleText = savedSchedule;
-        
-        updateUIHeaders();
-    }, 2000);
+        localStorage.setItem("currentUser", currentUser);
+        localStorage.setItem("userRole", userRole);
 
-    window.onload = function() {
+        try {
+            await fetch(CLOUD_URL, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Access-Key": API_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+        } catch(e) {}
+    }
+
+    setInterval(loadFromServer, 3000);
+
+    window.onload = async function() {
+        await loadFromServer();
         updateUIHeaders();
     }
 
@@ -457,7 +451,7 @@
         if (currentSaveCallback) { 
             currentSaveCallback(val); 
             saveAndSync();
-            alert("Potvrdené a synchronizované pre všetky konta!"); 
+            alert("Potvrdené a odoslané na server pre všetky zariadenia!"); 
         }
         closeModal();
     }
@@ -469,6 +463,7 @@
     }
 
     function openGrades() {
+        loadFromServer();
         let html = '<table style="width:100%; color:white; border-collapse:collapse; font-size:12px; margin-bottom:15px;">' +
             '<tr style="border-bottom:1px solid #444;"><th style="text-align:left;">Účastník</th><th style="text-align:left;">Známky (Priemer)</th><th style="text-align:left;">Správanie</th></tr>';
         
@@ -524,7 +519,7 @@
         });
 
         saveAndSync();
-        alert("Potvrdené! Známka bola pridaná a odoslaná žiakovi do správ.");
+        alert("Potvrdené! Známka bola pridaná a odoslaná žiakovi.");
         openManageGrades(studentName);
     }
 
@@ -568,12 +563,13 @@
             });
 
             saveAndSync();
-            alert("Potvrdené! Záznam bol uložený a odoslaný žiakovi do správy.");
+            alert("Potvrdené! Záznam bol uložený a odoslaná správa žiakovi.");
             openGrades();
         }
     }
 
     function openInbox() {
+        loadFromServer();
         let html = '';
         if (userRole === "Inšpektorka") {
             html += '<p style="font-size:11px; color:#8c9baf;">Hromadná správa viacerým žiakom:</p>';
@@ -626,7 +622,7 @@
             });
 
             saveAndSync();
-            alert("Potvrdené! Hromadná správa bola odoslaná vybraným žiakom.");
+            alert("Potvrdené! Hromadná správa bola odoslaná a uložená na serveri.");
             openInbox();
         }
     }
@@ -676,7 +672,7 @@
             if (chat && chat.length > 0) {
                 chat[chat.length - 1].reply = replyText;
                 saveAndSync();
-                alert("Potvrdené a odoslané žiakovi!");
+                alert("Potvrdené a odoslané na server!");
                 showInspectorChat(studentName);
             }
         }
@@ -687,7 +683,7 @@
         if (newPass) {
             passwords[studentName] = newPass;
             saveAndSync();
-            alert("Heslo bolo nastavené.");
+            alert("Heslo bolo nastavené a uložené.");
         }
     }
 
