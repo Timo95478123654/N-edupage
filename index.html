@@ -114,7 +114,7 @@
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
         <div class="title-area">
             <h2 id="current-user-title">Timotej</h2>
-            <p><span id="role-type">Žiak</span> | Inšpektorka: Olívia</p>
+            <p id="current-role-title">Žiak • Timotej</p>
         </div>
         <button class="menu-btn" onclick="openAccountSwitch()" title="Prepnúť účet" style="font-size:14px; background:#0066cc; padding:4px 8px; border-radius:4px;">👥</button>
     </div>
@@ -314,7 +314,7 @@
         localStorage.setItem("privateMessages", JSON.stringify(privateMessages));
     }
 
-    // Automatická okamžitá synchronizácia medzi všetkými zariadeniami každých 10 sekúnd
+    // Automatická synchronizácia každých 10 sekúnd
     setInterval(function() {
         let savedStudents = localStorage.getItem("studentsData");
         let savedMessages = localStorage.getItem("privateMessages");
@@ -406,7 +406,11 @@
 
     function updateUIHeaders() {
         document.getElementById("current-user-title").innerText = currentUser;
-        document.getElementById("role-type").innerText = userRole;
+        if (userRole === "Inšpektorka") {
+            document.getElementById("current-role-title").innerText = "Inšpektorka • " + currentUser;
+        } else {
+            document.getElementById("current-role-title").innerText = "Žiak • " + currentUser;
+        }
         document.getElementById("drawer-user-name").innerText = currentUser;
     }
 
@@ -568,7 +572,7 @@
             chat.forEach(function(m) {
                 html += '<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">' +
                     '<strong>Od: ' + m.sender + '</strong><p style="margin:4px 0;">' + m.text + '</p>' +
-                    (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď Olívie: ' + m.reply + '</p>': '') +
+                    (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď Olívie: ' + m.reply + '</p>' : '') +
                 '</div>';
             });
             html += '</div>';
