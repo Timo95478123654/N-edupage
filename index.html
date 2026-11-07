@@ -47,14 +47,15 @@
             gap: 8px; padding: 10px; overflow-y: auto; flex-grow: 1;
         }
         .tile {
-            background-color: #1e2c3a; padding: 12px; border-radius: 6px;
-            cursor: pointer; transition: background 0.2s, transform 0.1s;
+            background-color: #1a2636; padding: 12px; border-radius: 8px;
+            cursor: pointer; transition: transform 0.1s, background 0.2s;
             display: flex; align-items: center; gap: 12px;
-            border-left: 4px solid #0066cc;
+            border-left: 5px solid #3b82f6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .tile:hover { background-color: #26384a; transform: translateY(-1px); }
+        .tile:hover { background-color: #223247; transform: translateY(-1px); }
         .tile-icon-box {
-            width: 36px; height: 36px; border-radius: 8px;
+            width: 38px; height: 38px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 18px; flex-shrink: 0;
         }
@@ -120,97 +121,98 @@
         <div class="mini-slot"><span>5.</span>SKU<br>11:25</div>
     </div>
 
+    <!-- Hravé, jemné a farebné dlaždice -->
     <div class="grid">
-        <div class="tile" onclick="openInbox()" style="border-left-color: #ffcc00;">
-            <div class="tile-icon-box" style="background: rgba(255,204,0,0.15); color: #ffcc00;">✉️</div>
+        <div class="tile" onclick="openInbox()" style="border-left-color: #f59e0b;">
+            <div class="tile-icon-box" style="background: rgba(245,158,11,0.15); color: #f59e0b;">✉️</div>
             <div class="tile-content">
                 <h3>Správy</h3>
                 <p>Súkromný chat</p>
             </div>
         </div>
         
-        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; })" style="border-left-color: #00bfff;">
-            <div class="tile-icon-box" style="background: rgba(0,191,255,0.15); color: #00bfff;">📅</div>
+        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; })" style="border-left-color: #3b82f6;">
+            <div class="tile-icon-box" style="background: rgba(59,130,246,0.15); color: #3b82f6;">📅</div>
             <div class="tile-content">
                 <h3>Rozvrh / ETK</h3>
                 <p>Sobota a Nedeľa</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; })" style="border-left-color: #4CAF50;">
-            <div class="tile-icon-box" style="background: rgba(76,175,80,0.15); color: #4CAF50;">📖</div>
+        <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; })" style="border-left-color: #10b981;">
+            <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">📖</div>
             <div class="tile-content">
                 <h3>Moje hodiny</h3>
                 <p>Prehľad jázd</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openGrades()" style="border-left-color: #ff6b6b;">
-            <div class="tile-icon-box" style="background: rgba(255,107,107,0.15); color: #ff6b6b;">⭐</div>
+        <div class="tile" onclick="openGrades()" style="border-left-color: #ef4444;">
+            <div class="tile-icon-box" style="background: rgba(239,68,68,0.15); color: #ef4444;">⭐</div>
             <div class="tile-content">
                 <h3>Známky</h3>
                 <p>Priebežné hodnotenie</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, function(v) { examsText = v; })" style="border-left-color: #da70d6;">
-            <div class="tile-icon-box" style="background: rgba(218,112,214,0.15); color: #da70d6;">⏰</div>
+        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, function(v) { examsText = v; })" style="border-left-color: #8b5cf6;">
+            <div class="tile-icon-box" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">⏰</div>
             <div class="tile-content">
                 <h3>DÚ / písomky</h3>
                 <p>Termíny testov</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; })" style="border-left-color: #f4a460;">
-            <div class="tile-icon-box" style="background: rgba(244,164,96,0.15); color: #f4a460;">💼</div>
+        <div class="tile" onclick="openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; })" style="border-left-color: #d97706;">
+            <div class="tile-icon-box" style="background: rgba(217,119,6,0.15); color: #d97706;">💼</div>
             <div class="tile-content">
                 <h3>Učivo</h3>
                 <p>Záznamy hodín</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Výsledky', resultsText, true, function(v) { resultsText = v; })" style="border-left-color: #20b2aa;">
-            <div class="tile-icon-box" style="background: rgba(32,178,170,0.15); color: #20b2aa;">📊</div>
+        <div class="tile" onclick="openModal('Výsledky', resultsText, true, function(v) { resultsText = v; })" style="border-left-color: #06b6d4;">
+            <div class="tile-icon-box" style="background: rgba(6,182,212,0.15); color: #06b6d4;">📊</div>
             <div class="tile-content">
                 <h3>Výsledky</h3>
                 <p>Hodnotenie</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, function(v) { attendanceText = v; })" style="border-left-color: #32cd32;">
-            <div class="tile-icon-box" style="background: rgba(50,205,50,0.15); color: #32cd32;">📋</div>
+        <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, function(v) { attendanceText = v; })" style="border-left-color: #14b8a6;">
+            <div class="tile-icon-box" style="background: rgba(20,184,166,0.15); color: #14b8a6;">📋</div>
             <div class="tile-content">
                 <h3>Dochádzka</h3>
                 <p>Záznamy účasti</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Platby', 'Kurz je plne uhradený.', false)" style="border-left-color: #3cb371;">
-            <div class="tile-icon-box" style="background: rgba(60,179,113,0.15); color: #3cb371;">💳</div>
+        <div class="tile" onclick="openModal('Platby', 'Kurz je plne uhradený.', false)" style="border-left-color: #22c55e;">
+            <div class="tile-icon-box" style="background: rgba(34,197,94,0.15); color: #22c55e;">💳</div>
             <div class="tile-content">
                 <h3>Platby</h3>
                 <p>Poplatky za kurz</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; })" style="border-left-color: #ff4500;">
-            <div class="tile-icon-box" style="background: rgba(255,69,0,0.15); color: #ff4500;">🔄</div>
+        <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; })" style="border-left-color: #f97316;">
+            <div class="tile-icon-box" style="background: rgba(249,115,22,0.15); color: #f97316;">🔄</div>
             <div class="tile-content">
                 <h3>Suplovanie</h3>
                 <p>Zmeny v rozvrhu</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Jedálny lístok', 'Kredit: 0 €', false)" style="border-left-color: #ff1493;">
-            <div class="tile-icon-box" style="background: rgba(255,20,147,0.15); color: #ff1493;">🍲</div>
+        <div class="tile" onclick="openModal('Jedálny lístok', 'Kredit: 0 €', false)" style="border-left-color: #ec4899;">
+            <div class="tile-icon-box" style="background: rgba(236,72,153,0.15); color: #ec4899;">🍲</div>
             <div class="tile-content">
                 <h3>Jedálny lístok</h3>
                 <p>Kredit: 0 €</p>
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; })" style="border-left-color: #00fa9a;">
-            <div class="tile-icon-box" style="background: rgba(0,250,154,0.15); color: #00fa9a;">🖼️</div>
+        <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; })" style="border-left-color: #10b981;">
+            <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">🖼️</div>
             <div class="tile-content">
                 <h3>Nástenka</h3>
                 <p>Materiály</p>
@@ -268,7 +270,6 @@
     let suplovanieText = "Žiadne zmeny v harmonograme autoškoly.";
     let nastenkaText = "Nové študijné materiály a testové otázky boli nahraté inšpektorkou.";
 
-    // Údaje pre žiakov: známky a správanie (poznámky/pochvaly)
     let studentsData = {
         "Timotej": { grades: [1, 1, 2], behavior: ["Pochvala: Vzorná príprava na jazdu"] },
         "Rebeka": { grades: [1, 2, 1], behavior: ["Poznámka: Pozor na prednosť v jazde"] },
@@ -421,11 +422,11 @@
     function manageGrades(studentName) {
         let action = prompt("Chcete známku Pridať alebo Vymazať?\nZadajte: 'pridat' alebo 'vymazat'");
         if (action && action.toLowerCase() === "pridat") {
-            let g = prompt("Zadajte známku (1, 2, 3, 4 alebo 5):");
+            let g = prompt("Zadajte známku (1 - výborný, 2, 3, 4, 5):");
             let gNum = parseInt(g);
             if (gNum >= 1 && gNum <= 5) {
                 studentsData[studentName].grades.push(gNum);
-                alert("Známka " + gNum bola pridána.");
+                alert("Známka " + gNum + " bola pridaná.");
                 openGrades();
             } else {
                 alert("Neplatná známka.");
