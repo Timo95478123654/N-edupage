@@ -298,21 +298,19 @@
 
     let currentSaveCallback = null;
 
-    const CLOUD_URL = "https://api.jsonbin.io/v3/b/657a0b38dc7465401875c742";
-    const API_KEY = "$2a$10$wV9X0G8gJzK9X7gK8g7gYuO5x8gJzK9X7gK8g7gYuO5x8gJzK9X7g";
+    // Pripojenie na tvoj vlastný server na Renderi
+    const SERVER_URL = "https://edupage-autoskola-server.onrender.com";
 
     async function loadFromServer() {
         try {
-            let res = await fetch(CLOUD_URL + "/latest", {
-                headers: { "X-Access-Key": API_KEY }
-            });
+            let res = await fetch(SERVER_URL + "/api/data");
             if (res.ok) {
                 let json = await res.json();
-                if (json && json.record) {
-                    if (json.record.studentsData) studentsData = json.record.studentsData;
-                    if (json.record.privateMessages) privateMessages = json.record.privateMessages;
-                    if (json.record.passwords) passwords = json.record.passwords;
-                    if (json.record.scheduleText) scheduleText = json.record.scheduleText;
+                if (json) {
+                    if (json.studentsData) studentsData = json.studentsData;
+                    if (json.privateMessages) privateMessages = json.privateMessages;
+                    if (json.passwords) passwords = json.passwords;
+                    if (json.scheduleText) scheduleText = json.scheduleText;
                     updateUIHeaders();
                 }
             }
@@ -331,17 +329,15 @@
         localStorage.setItem("userRole", userRole);
 
         try {
-            await fetch(CLOUD_URL, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Access-Key": API_KEY
-                },
+            await fetch(SERVER_URL + "/api/data", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
         } catch(e) {}
     }
 
+    // Automatická kontrola servera každé 3 sekundy
     setInterval(loadFromServer, 3000);
 
     window.onload = async function() {
@@ -504,7 +500,6 @@
         });
         html += '</div>';
         
-        // Tlačidlo Potvrdiť priamo v okne úprav známok
         html += '<div style="margin-top:20px; text-align:right;">';
         html += '<button onclick="confirmGradesChange(\'' + studentName + '\')" style="background:#4CAF50; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:bold; cursor:pointer;">Potvrdiť a odoslať</button>';
         html += '</div>';
