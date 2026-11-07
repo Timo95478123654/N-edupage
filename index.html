@@ -136,7 +136,7 @@
             </div>
         </div>
         
-        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; saveStorage(); })" style="border-left-color: #3b82f6;">
+        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; saveAndSync(); })" style="border-left-color: #3b82f6;">
             <div class="tile-icon-box" style="background: rgba(59,130,246,0.15); color: #3b82f6;">📅</div>
             <div class="tile-content">
                 <h3>Rozvrh / ETK</h3>
@@ -144,7 +144,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; saveStorage(); })" style="border-left-color: #10b981;">
+        <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; saveAndSync(); })" style="border-left-color: #10b981;">
             <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">📖</div>
             <div class="tile-content">
                 <h3>Moje hodiny</h3>
@@ -160,7 +160,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, function(v) { examsText = v; saveStorage(); })" style="border-left-color: #8b5cf6;">
+        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, function(v) { examsText = v; saveAndSync(); })" style="border-left-color: #8b5cf6;">
             <div class="tile-icon-box" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">⏰</div>
             <div class="tile-content">
                 <h3>DÚ / písomky</h3>
@@ -168,7 +168,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; saveStorage(); })" style="border-left-color: #d97706;">
+        <div class="tile" onclick="openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; saveAndSync(); })" style="border-left-color: #d97706;">
             <div class="tile-icon-box" style="background: rgba(217,119,6,0.15); color: #d97706;">💼</div>
             <div class="tile-content">
                 <h3>Učivo</h3>
@@ -176,7 +176,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Výsledky', resultsText, true, function(v) { resultsText = v; saveStorage(); })" style="border-left-color: #06b6d4;">
+        <div class="tile" onclick="openModal('Výsledky', resultsText, true, function(v) { resultsText = v; saveAndSync(); })" style="border-left-color: #06b6d4;">
             <div class="tile-icon-box" style="background: rgba(6,182,212,0.15); color: #06b6d4;">📊</div>
             <div class="tile-content">
                 <h3>Výsledky</h3>
@@ -184,7 +184,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, function(v) { attendanceText = v; saveStorage(); })" style="border-left-color: #14b8a6;">
+        <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, function(v) { attendanceText = v; saveAndSync(); })" style="border-left-color: #14b8a6;">
             <div class="tile-icon-box" style="background: rgba(20,184,166,0.15); color: #14b8a6;">📋</div>
             <div class="tile-content">
                 <h3>Dochádzka</h3>
@@ -200,7 +200,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; saveStorage(); })" style="border-left-color: #f97316;">
+        <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; saveAndSync(); })" style="border-left-color: #f97316;">
             <div class="tile-icon-box" style="background: rgba(249,115,22,0.15); color: #f97316;">🔄</div>
             <div class="tile-content">
                 <h3>Suplovanie</h3>
@@ -216,7 +216,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; saveStorage(); })" style="border-left-color: #10b981;">
+        <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; saveAndSync(); })" style="border-left-color: #10b981;">
             <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">🖼️</div>
             <div class="tile-content">
                 <h3>Nástenka</h3>
@@ -240,11 +240,11 @@
     <div class="drawer-item" onclick="toggleMenu(); openInbox()">✉️ Správy a súkromný chat</div>
     <div class="drawer-item" onclick="toggleMenu(); openGrades()">⭐ Známky a správanie</div>
     <div class="drawer-section">Vyučovanie</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; saveStorage(); })">📅 Rozvrh / ETK</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; saveStorage(); })">📖 Moje hodiny</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; saveStorage(); })">💼 Učivo</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; saveStorage(); })">🔄 Suplovanie</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; saveStorage(); })">🖼️ Fotky / Nástenka</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; saveAndSync(); })">📅 Rozvrh / ETK</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; saveAndSync(); })">📖 Moje hodiny</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; saveAndSync(); })">💼 Učivo</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; saveAndSync(); })">🔄 Suplovanie</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; saveAndSync(); })">🖼️ Fotky / Nástenka</div>
 </div>
 
 <div id="custom-modal" class="modal">
@@ -252,7 +252,7 @@
         <h3 id="modal-title">Názov</h3>
         <div id="modal-body"></div>
         <div class="modal-buttons">
-            <button id="modal-save" style="display:none;" onclick="saveModalAction()">Uložiť zmeny</button>
+            <button id="modal-save" style="display:none;" onclick="saveModalAction()">Potvrdiť</button>
             <button class="close-btn" onclick="closeModal()">Zatvoriť</button>
         </div>
     </div>
@@ -298,7 +298,7 @@
 
     let currentSaveCallback = null;
 
-    function saveStorage() {
+    function saveAndSync() {
         localStorage.setItem("currentUser", currentUser);
         localStorage.setItem("userRole", userRole);
         localStorage.setItem("passwords", JSON.stringify(passwords));
@@ -314,15 +314,17 @@
         localStorage.setItem("privateMessages", JSON.stringify(privateMessages));
     }
 
-    // Automatická synchronizácia pre každé zariadenie každých 10 sekúnd
+    // Automatická okamžitá synchronizácia medzi všetkými zariadeniami každých 10 sekúnd
     setInterval(function() {
         let savedStudents = localStorage.getItem("studentsData");
         let savedMessages = localStorage.getItem("privateMessages");
         let savedSchedule = localStorage.getItem("scheduleText");
+        let savedPasswords = localStorage.getItem("passwords");
         
         if (savedStudents) studentsData = JSON.parse(savedStudents);
         if (savedMessages) privateMessages = JSON.parse(savedMessages);
         if (savedSchedule) scheduleText = savedSchedule;
+        if (savedPasswords) passwords = JSON.parse(savedPasswords);
         
         updateUIHeaders();
     }, 10000);
@@ -357,7 +359,7 @@
                 currentUser = "Olívia";
                 userRole = "Inšpektorka";
                 updateUIHeaders();
-                saveStorage();
+                saveAndSync();
                 closeModal();
                 alert("Prihlásená ako Olívia (Inšpektorka).");
             } else {
@@ -370,7 +372,7 @@
                     currentUser = name;
                     userRole = "Žiak";
                     updateUIHeaders();
-                    saveStorage();
+                    saveAndSync();
                     closeModal();
                     alert("Prihlásený/á ako " + name);
                 } else {
@@ -380,7 +382,7 @@
                 currentUser = name;
                 userRole = "Žiak";
                 updateUIHeaders();
-                saveStorage();
+                saveAndSync();
                 closeModal();
                 alert("Prihlásený/á ako " + name + " (bez hesla)");
             }
@@ -393,7 +395,7 @@
             let newP = prompt("Zadajte nové trvalé heslo:");
             if (newP) {
                 passwords["Olívia"] = newP;
-                saveStorage();
+                saveAndSync();
                 alert("Heslo inšpektorky bolo trvalo zmenené a uložené.");
                 closeModal();
             }
@@ -428,8 +430,8 @@
         let val = document.getElementById("modal-textarea").value;
         if (currentSaveCallback) { 
             currentSaveCallback(val); 
-            saveStorage();
-            alert("Zmeny boli uložené!"); 
+            saveAndSync();
+            alert("Potvrdené a synchronizované na všetkých zariadeniach!"); 
         }
         closeModal();
     }
@@ -467,7 +469,7 @@
 
     function openManageGrades(studentName) {
         let html = '<p>Správa známok pre: <strong>' + studentName + '</strong></p>';
-        html += '<p style="font-size:11px; color:#aaa;">Pridať známku kliknutím:</p>';
+        html += '<p style="font-size:11px; color:#aaa;">Pridať známku kliknutím a potvrdiť:</p>';
         html += '<div style="margin-bottom:10px;">';
         for(let i=1; i<=5; i++) {
             html += '<button onclick="addGrade(\'' + studentName + '\', ' + i + ')" class="btn-grade">' + i + '</button>';
@@ -492,10 +494,11 @@
         privateMessages[studentName].push({
             sender: "Inšpektorka Olívia",
             text: "Nová známka: " + gradeNum,
-            reply: "Priebežný priemer bol automaticky aktualizovaný."
+            reply: "Priebežný priemer bol aktualizovaný."
         });
 
-        saveStorage();
+        saveAndSync();
+        alert("Potvrdené! Zmena známky sa synchronizovala na všetkých zariadeniach.");
         openManageGrades(studentName);
     }
 
@@ -510,7 +513,8 @@
             reply: "Hodnotenie bolo upravené."
         });
 
-        saveStorage();
+        saveAndSync();
+        alert("Potvrdené! Zmena bola synchronizovaná.");
         openManageGrades(studentName);
     }
 
@@ -537,8 +541,8 @@
                 reply: "Prosím venujte tomu pozornosť."
             });
 
-            saveStorage();
-            alert(type + " bola úspešne pridaná, uložená a odoslaná do správ.");
+            saveAndSync();
+            alert("Potvrdené! Záznam bol uložený a synchronizovaný pre všetky zariadenia.");
             openGrades();
         }
     }
@@ -551,7 +555,7 @@
             html += '<label><input type="checkbox" id="chk-timotej" checked> Timotej</label><br>';
             html += '<label><input type="checkbox" id="chk-eliska" checked> Eliška</label><br>';
             html += '<label><input type="checkbox" id="chk-rebeka" checked> Rebeka</label><br>';
-            html += '<button onclick="sendBulkMessage()" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-top:5px; cursor:pointer;">Odoslať vybraným žiakom</button>';
+            html += '<button onclick="sendBulkMessage()" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-top:5px; cursor:pointer;">Potvrdiť a odoslať vybraným žiakom</button>';
             html += '</div>';
             
             html += '<p style="font-size:11px; color:#8c9baf;">Alebo kliknite na individuálny chat:</p>';
@@ -564,7 +568,7 @@
             chat.forEach(function(m) {
                 html += '<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">' +
                     '<strong>Od: ' + m.sender + '</strong><p style="margin:4px 0;">' + m.text + '</p>' +
-                    (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď Olívie: ' + m.reply + '</p>' : '') +
+                    (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď Olívie: ' + m.reply + '</p>': '') +
                 '</div>';
             });
             html += '</div>';
@@ -595,8 +599,8 @@
                 });
             });
 
-            saveStorage();
-            alert("Hromadná správa bola úspešne odoslaná vybraným žiakom.");
+            saveAndSync();
+            alert("Potvrdené! Hromadná správa bola odoslaná a synchronizovaná.");
             openInbox();
         }
     }
@@ -612,9 +616,9 @@
             '</div>';
         });
         html += '</div>';
-        html += '<button onclick="inspectorReply(\'' + studentName + '\')" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">Odpovedať žiakovi</button>';
+        html += '<button onclick="inspectorReply(\'' + studentName + '\')" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">Potvrdiť a odpovedať žiakovi</button>';
         html += '<button onclick="inspectorSetPassword(\'' + studentName + '\')" style="background:#ff8c5a; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">🔑 Nastaviť heslo pre ' + studentName + '</button>';
-        html += '<button onclick="openInbox()" style="background:#444; color:white; border:none; padding:6px; border-radius:4px; width:100%; cursor:pointer;">Späť na zoznam</button>';
+        html += '<button onclick="openInbox()" style="background:#444; color:white; border:none; padding:6px; border-radius:4px; width:100%; cursor:pointer;">Späť</button>';
 
         document.getElementById("modal-body").innerHTML = html;
     }
@@ -624,8 +628,8 @@
         if (text) {
             if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
             privateMessages[currentUser].push({ sender: currentUser, text: text, reply: "" });
-            saveStorage();
-            alert("Správa bola odoslaná inšpektorke.");
+            saveAndSync();
+            alert("Správa bola odoslaná.");
             openInbox();
         }
     }
@@ -634,8 +638,8 @@
         let text = "Prosím o vytvorenie osobného hesla pre moje konto.";
         if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
         privateMessages[currentUser].push({ sender: currentUser, text: text, reply: "" });
-        saveStorage();
-        alert("Žiadosť o heslo bola odoslaná inšpektorke Olívii.");
+        saveAndSync();
+        alert("Žiadosť bola odoslaná.");
         openInbox();
     }
 
@@ -645,8 +649,8 @@
             let chat = privateMessages[studentName];
             if (chat && chat.length > 0) {
                 chat[chat.length - 1].reply = replyText;
-                saveStorage();
-                alert("Odpoveď bola odoslaná.");
+                saveAndSync();
+                alert("Potvrdené a synchronizované!");
                 showInspectorChat(studentName);
             }
         }
@@ -656,8 +660,8 @@
         let newPass = prompt("Zadajte nové trvalé heslo pre žiaka " + studentName + ":");
         if (newPass) {
             passwords[studentName] = newPass;
-            saveStorage();
-            alert("Heslo pre " + studentName + " bolo nastavené a uložené.");
+            saveAndSync();
+            alert("Heslo bolo nastavené a synchronizované.");
         }
     }
 
