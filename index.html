@@ -113,12 +113,12 @@
         <div class="tile" onclick="openInbox()">
             <div class="tile-icon">✉️</div>
             <div class="tile-content">
-                <h3 style="color: #ffcc00;">Správy / Inbox</h3>
-                <p>Komunikácia a žiadosti o heslo</p>
+                <h3 style="color: #ffcc00;">Správy</h3>
+                <p>Komunikácia a žiadosti</p>
             </div>
         </div>
         
-        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, v => scheduleText = v)">
+        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; })">
             <div class="tile-icon">📅</div>
             <div class="tile-content">
                 <h3 style="color: #00bfff;">Rozvrh / ETK</h3>
@@ -126,7 +126,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, v => myClassesText = v)">
+        <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; })">
             <div class="tile-icon">📖</div>
             <div class="tile-content">
                 <h3 style="color: #4CAF50;">Moje hodiny</h3>
@@ -142,7 +142,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, v => examsText = v)">
+        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, function(v) { examsText = v; })">
             <div class="tile-icon">⏰</div>
             <div class="tile-content">
                 <h3 style="color: #da70d6;">DÚ / písomky</h3>
@@ -150,7 +150,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Učivo', uciwoText, true, v => uciwoText = v)">
+        <div class="tile" onclick="openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; })">
             <div class="tile-icon">💼</div>
             <div class="tile-content">
                 <h3 style="color: #f4a460;">Učivo</h3>
@@ -158,7 +158,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Výsledky', resultsText, true, v => resultsText = v)">
+        <div class="tile" onclick="openModal('Výsledky', resultsText, true, function(v) { resultsText = v; })">
             <div class="tile-icon">📊</div>
             <div class="tile-content">
                 <h3 style="color: #20b2aa;">Výsledky</h3>
@@ -166,7 +166,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, v => attendanceText = v)">
+        <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, function(v) { attendanceText = v; })">
             <div class="tile-icon">📋</div>
             <div class="tile-content">
                 <h3 style="color: #32cd32;">Dochádzka</h3>
@@ -182,7 +182,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, v => suplovanieText = v)">
+        <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; })">
             <div class="tile-icon">🔄</div>
             <div class="tile-content">
                 <h3 style="color: #ff4500;">Suplovanie</h3>
@@ -198,7 +198,7 @@
             </div>
         </div>
 
-        <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, v => nastenkaText = v)">
+        <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; })">
             <div class="tile-icon">🖼️</div>
             <div class="tile-content">
                 <h3 style="color: #00fa9a;">Fotky / Nástenka</h3>
@@ -216,14 +216,14 @@
     <div class="drawer-section">Kontá</div>
     <div class="drawer-item" onclick="toggleMenu(); openAccountSwitch()">👥 Prepnúť účet / Inšpektorka</div>
     <div class="drawer-section">Komunikácia</div>
-    <div class="drawer-item" onclick="toggleMenu(); openInbox()">✉️ Správy a Inbox / Požiadať o heslo</div>
+    <div class="drawer-item" onclick="toggleMenu(); openInbox()">✉️ Správy a žiadosti o heslo</div>
     <div class="drawer-item" onclick="toggleMenu(); openGrades()">⭐ Známky</div>
     <div class="drawer-section">Vyučovanie</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Rozvrh / ETK', scheduleText, true, v => scheduleText = v)">📅 Rozvrh / ETK</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Moje hodiny', myClassesText, true, v => myClassesText = v)">📖 Moje hodiny</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Učivo', uciwoText, true, v => uciwoText = v)">💼 Učivo</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Suplovanie', suplovanieText, true, v => suplovanieText = v)">🔄 Suplovanie</div>
-    <div class="drawer-item" onclick="toggleMenu(); openModal('Fotky / Nástenka', nastenkaText, true, v => nastenkaText = v)">🖼️ Fotky / Nástenka</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; })">📅 Rozvrh / ETK</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; })">📖 Moje hodiny</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; })">💼 Učivo</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; })">🔄 Suplovanie</div>
+    <div class="drawer-item" onclick="toggleMenu(); openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; })">🖼️ Fotky / Nástenka</div>
 </div>
 
 <div id="custom-modal" class="modal">
@@ -238,10 +238,9 @@
 </div>
 
 <script>
-    let currentUser = "Timotej"; // Začíname ako žiak Timotej
-    let userRole = "Žiak";       // "Žiak" alebo "Inšpektorka"
+    let currentUser = "Timotej";
+    let userRole = "Žiak";
     
-    // Heslá pre jednotlivých používateľov
     let passwords = {
         "Olívia": "1055",
         "Timotej": "",
@@ -306,7 +305,7 @@
 
     function loginStudent(name) {
         if (passwords[name] !== "") {
-            let pInput = prompt(`Zadajte svoje osobné heslo, ktoré vám vytvorila inšpektorka pre ${name}:`);
+            let pInput = prompt(`Zadajte svoje osobné heslo pre ${name}:`);
             if (pInput === passwords[name]) {
                 currentUser = name;
                 userRole = "Žiak";
@@ -334,12 +333,12 @@
         let isEditable = (userRole === "Inšpektorka" && editable);
         
         if (isEditable) {
-            document.getElementById("modal-body").innerHTML = `<textarea id="modal-textarea" rows="5">${text}</textarea>`;
+            document.getElementById("modal-body").innerHTML = '<textarea id="modal-textarea" rows="5">' + text + '</textarea>';
             document.getElementById("modal-save").style.display = "block";
             currentSaveCallback = saveCallback;
         } else {
-            document.getElementById("modal-body").innerHTML = `<p style="white-space: pre-line; color: #fff;">${text}</p>` + 
-                (editable ? `<br><p style="font-size:10px; color:#888;">(Upravovať môže iba inšpektorka Olívia)</p>` : "");
+            document.getElementById("modal-body").innerHTML = '<p style="white-space: pre-line; color: #fff;">' + text + '</p>' + 
+                (editable ? '<br><p style="font-size:10px; color:#888;">(Upravovať môže iba inšpektorka Olívia)</p>' : "");
             document.getElementById("modal-save").style.display = "none";
         }
         document.getElementById("custom-modal").style.display = "flex";
@@ -347,32 +346,35 @@
 
     function saveModalAction() {
         let val = document.getElementById("modal-textarea").value;
-        if (currentSaveCallback) { currentSaveCallback(val); alert("Zmeny boli uložené!"); }
+        if (currentSaveCallback) { 
+            currentSaveCallback(val); 
+            alert("Zmeny boli uložené!"); 
+        }
         closeModal();
     }
 
     function calculateAverage(grades) {
         if (grades.length === 0) return "0.00";
-        let sum = grades.reduce((a, b) => a + b, 0);
+        let sum = grades.reduce(function(a, b) { return a + b; }, 0);
         return (sum / grades.length).toFixed(2);
     }
 
     function openGrades() {
-        let html = `<table style="width:100%; color:white; border-collapse:collapse; font-size:12px;">
-            <tr style="border-bottom:1px solid #444;"><th style="text-align:left;">Účastník</th><th style="text-align:left;">Známky</th><th style="text-align:right;">Priemer</th></tr>`;
+        let html = '<table style="width:100%; color:white; border-collapse:collapse; font-size:12px;">' +
+            '<tr style="border-bottom:1px solid #444;"><th style="text-align:left;">Účastník</th><th style="text-align:left;">Známky</th><th style="text-align:right;">Priemer</th></tr>';
         
-        gradesData.forEach(student => {
+        gradesData.forEach(function(student) {
             let avg = calculateAverage(student.grades);
-            html += `<tr style="border-bottom:1px solid #333;">
-                <td>${student.name}</td>
-                <td>${student.grades.join(", ")}</td>
-                <td style="text-align:right; font-weight:bold; color:#ff8c5a;">${avg}</td>
-            </tr>`;
+            html += '<tr style="border-bottom:1px solid #333;">' +
+                '<td>' + student.name + '</td>' +
+                '<td>' + student.grades.join(", ") + '</td>' +
+                '<td style="text-align:right; font-weight:bold; color:#ff8c5a;">' + avg + '</td>' +
+            '</tr>';
         });
-        html += `</table>`;
+        html += '</table>';
 
         if (userRole === "Inšpektorka") {
-            html += `<br><button onclick="addGradePrompt()" style="background:#0066cc; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; width:100%;">Pridať známku žiakovi</button>`;
+            html += '<br><button onclick="addGradePrompt()" style="background:#0066cc; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; width:100%;">Pridať známku žiakovi</button>';
         }
 
         document.getElementById("modal-title").innerText = "Známky a priemer - Autoškola";
@@ -383,9 +385,9 @@
 
     function addGradePrompt() {
         let name = prompt("Zadajte meno žiaka (Timotej / Rebeka / Eliška):");
-        let student = gradesData.find(s => s.name.toLowerCase() === (name || "").toLowerCase());
+        let student = gradesData.find(function(s) { return s.name.toLowerCase() === (name || "").toLowerCase(); });
         if (student) {
-            let gInput = prompt(`Zadajte novú známku (celé číslo 1-5) pre ${student.name}:`);
+            let gInput = prompt("Zadajte novú známku (celé číslo 1-5) pre " + student.name + ":");
             let gVal = parseInt(gInput);
             if (gVal >= 1 && gVal <= 5) {
                 student.grades.push(gVal);
@@ -400,20 +402,20 @@
     }
 
     function openInbox() {
-        let html = `<div style="max-height:220px; overflow-y:auto; margin-bottom:10px;">`;
-        messages.forEach((m, idx) => {
-            html += `<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">
-                <strong>Od: ${m.sender}</strong><p style="margin:4px 0;">${m.text}</p>` +
-                (m.reply ? `<p style="margin:2px 0; color:#4CAF50;">Odpoveď: ${m.reply}</p>` : ``) +
-            `</div>`;
+        let html = '<div style="max-height:220px; overflow-y:auto; margin-bottom:10px;">';
+        messages.forEach(function(m, idx) {
+            html += '<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">' +
+                '<strong>Od: ' + m.sender + '</strong><p style="margin:4px 0;">' + m.text + '</p>' +
+                (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď: ' + m.reply + '</p>' : '') +
+            '</div>';
         });
-        html += `</div>`;
+        html += '</div>';
 
         if (userRole === "Inšpektorka") {
-            html += `<button onclick="replyMessagePrompt()" style="background:#4CAF50; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%; margin-bottom:5px;">Odpovedať na správu / Nastaviť heslo žiakovi</button>`;
+            html += '<button onclick="replyMessagePrompt()" style="background:#4CAF50; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%; margin-bottom:5px;">Odpovedať / Nastaviť heslo žiakovi</button>';
         } else {
-            html += `<button onclick="sendNewMessage()" style="background:#0066cc; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%; margin-bottom:5px;">Napísať správu inšpektorke</button>`;
-            html += `<button onclick="requestPassword()" style="background:#ff8c5a; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%;">🔑 Poprosiť inšpektorku o heslo</button>`;
+            html += '<button onclick="sendNewMessage()" style="background:#0066cc; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%; margin-bottom:5px;">Napísať správu inšpektorke</button>';
+            html += '<button onclick="requestPassword()" style="background:#ff8c5a; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%;">🔑 Poprosiť inšpektorku o heslo</button>';
         }
 
         document.getElementById("modal-title").innerText = "Inbox / Správy / Žiadosti";
@@ -432,11 +434,43 @@
     }
 
     function requestPassword() {
-        let text = `Prosím o vytvorenie osobného hesla pre moje konto (${currentUser}).`;
+        let text = "Prosím o vytvorenie osobného hesla pre moje konto (" + currentUser + ").";
         messages.push({ sender: currentUser, text: text, reply: "" });
         alert("Žiadosť o heslo bola odoslaná inšpektorke Olívii.");
         openInbox();
     }
 
     function replyMessagePrompt() {
-        let actionChoice = prompt("Zadajte:\n1 - Odpovedať na správ
+        let actionChoice = prompt("Zadajte:\n1 - Odpovedať na správu\n2 - Nastaviť nové heslo pre žiaka");
+        if (actionChoice === "1") {
+            let idxInput = prompt("Zadajte číslo správy (1 až " + messages.length + "):");
+            let idx = parseInt(idxInput) - 1;
+            if (!isNaN(idx) && messages[idx]) {
+                let replyText = prompt("Zadajte text odpovede od Olívie:");
+                if (replyText) {
+                    messages[idx].reply = replyText;
+                    alert("Odpoveď bola odoslaná.");
+                    openInbox();
+                }
+            } else { alert("Neplatná správa."); }
+        } else if (actionChoice === "2") {
+            let studentName = prompt("Zadajte meno žiaka, ktorému chcete nastaviť heslo (Timotej / Eliška / Rebeka):");
+            if (passwords.hasOwnProperty(studentName) && studentName !== "Olívia") {
+                let newPass = prompt("Zadajte nové heslo pre žiaka " + studentName + ":");
+                if (newPass) {
+                    passwords[studentName] = newPass;
+                    alert("Heslo pre " + studentName + " bolo úspešne vytvorené a nastavené.");
+                }
+            } else {
+                alert("Neznámy žiak.");
+            }
+        }
+    }
+
+    function closeModal() {
+        document.getElementById("custom-modal").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
