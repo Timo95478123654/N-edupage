@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPage - Autoškola</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         body {
             margin: 0; padding: 0;
@@ -46,7 +44,6 @@
             overflow-y: auto; flex-grow: 1; padding: 10px;
         }
 
-        /* EduPage štýl notifikácií a správ */
         .date-divider {
             font-size: 11px; color: #8c9baf; margin: 15px 0 8px 5px; text-transform: uppercase; font-weight: bold;
         }
@@ -54,6 +51,7 @@
             background-color: #1a2636; border-radius: 8px; padding: 12px; margin-bottom: 8px;
             display: flex; gap: 12px; align-items: flex-start; border-left: 4px solid #f59e0b;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
         }
         .notif-icon {
             width: 32px; height: 32px; border-radius: 50%; background: rgba(245,158,11,0.2);
@@ -140,9 +138,9 @@
         <button class="menu-btn" onclick="openAccountSwitch()" title="Prepnúť účet" style="font-size:14px; background:#0066cc; padding:4px 8px; border-radius:4px;">👥</button>
     </div>
 
-    <!-- Hlavná obrazovka s dlaždicami (domov) -->
+    <!-- Hlavná obrazovka s dlaždicami -->
     <div id="main-view" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
-        <div class="mini-schedule-bar">
+        <div class="mini-schedule-bar" style="background-color: #16202b; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; border-bottom: 1px solid #263749; color: #b4becd;">
             <div class="mini-slot"><span>1.</span>AUT<br>7:45</div>
             <div class="mini-slot"><span>2.</span>JAZ<br>8:40</div>
             <div class="mini-slot"><span>3.</span>TRE<br>9:35</div>
@@ -249,7 +247,7 @@
         </div>
     </div>
 
-    <!-- EduPage sekcia Správy (skrytá kým sa neklikne) -->
+    <!-- EduPage sekcia Správy v štýle feedu z videa -->
     <div id="inbox-view" style="display: none; flex-direction: column; height: 100%; overflow: hidden;">
         <div class="edupage-header">
             <button onclick="closeInboxView()" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">← Späť</button>
@@ -257,7 +255,7 @@
             <button onclick="openNewMessagePrompt()" style="background:#4CAF50; border:none; color:white; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">+ Napísať</button>
         </div>
         <div class="content-scroll" id="inbox-content-list">
-            <!-- Sem sa dynamicky nahodia správy v štýle EduPage feedu -->
+            <!-- Sem sa načítavajú správy -->
         </div>
     </div>
 </div>
@@ -322,36 +320,35 @@
 
     let privateMessages = {
         "Timotej": [
-            { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy presne začíname v sobotu?", reply: "Dobrý deň, začínam o 8:00.", date: "Sobota" }
+            { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy presne začíname v sobotu?", reply: "Dobrý deň, začínam o 8:00." }
         ],
         "Eliška": [
-            { sender: "Eliška", text: "Dobrý deň, chcela by som poprosiť o heslo na moje konto.", reply: "", date: "Piatok" }
+            { sender: "Eliška", text: "Dobrý deň, chcela by som poprosiť o heslo na moje konto.", reply: "" }
         ],
         "Rebeka": [
-            { sender: "Rebeka", text: "Dobrý deň, zvládla som testy na výbornú!", reply: "Skvelá práca Rebeka, gratulujem!", date: "Piatok" }
+            { sender: "Rebeka", text: "Dobrý deň, zvládla som testy na výbornú!", reply: "Skvelá práca Rebeka, gratulujem!" }
         ]
     };
 
     let currentSaveCallback = null;
 
-    // --- FIREBASE NASTAVENIE ---
-    const firebaseConfig = {
-        databaseURL: "https://autoskola-edupage-default-rtdb.europe-west1.firebasedatabase.app"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const dbRef = firebase.database().ref('appState');
+    // --- JEDNODUCHÉ BEZ-KOLÍZNE API ÚTOČISKÉ ÚLOŽISKO ---
+    const BIN_URL = "https://api.npoint.io/e94d8d17f4b0051e0892";
 
-    function loadFromServer() {
-        dbRef.once('value', (snapshot) => {
-            let json = snapshot.val();
-            if (json) {
-                if (json.studentsData) studentsData = json.studentsData;
-                if (json.privateMessages) privateMessages = json.privateMessages;
-                if (json.passwords) passwords = json.passwords;
-                if (json.scheduleText) scheduleText = json.scheduleText;
-                updateUIHeaders();
+    async function loadFromServer() {
+        try {
+            let res = await fetch(BIN_URL);
+            if (res.ok) {
+                let json = await res.json();
+                if (json && json.studentsData) {
+                    studentsData = json.studentsData;
+                    privateMessages = json.privateMessages || privateMessages;
+                    passwords = json.passwords || passwords;
+                    scheduleText = json.scheduleText || scheduleText;
+                    updateUIHeaders();
+                }
             }
-        });
+        } catch(e) {}
     }
 
     async function saveAndSync() {
@@ -365,23 +362,21 @@
         localStorage.setItem("currentUser", currentUser);
         localStorage.setItem("userRole", userRole);
 
-        dbRef.set(payload);
+        try {
+            await fetch(BIN_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+        } catch(e) {}
     }
 
-    window.onload = function() {
-        loadFromServer();
-        updateUIHeaders();
+    // Automatická synchronizácia každé 3 sekundy
+    setInterval(loadFromServer, 3000);
 
-        dbRef.on('value', (snapshot) => {
-            let json = snapshot.val();
-            if (json) {
-                if (json.studentsData) studentsData = json.studentsData;
-                if (json.privateMessages) privateMessages = json.privateMessages;
-                if (json.passwords) passwords = json.passwords;
-                if (json.scheduleText) scheduleText = json.scheduleText;
-                updateUIHeaders();
-            }
-        });
+    window.onload = async function() {
+        await loadFromServer();
+        updateUIHeaders();
     }
 
     function toggleMenu() {
@@ -465,28 +460,27 @@
         document.getElementById("drawer-user-name").innerText = currentUser;
     }
 
-    // --- OTVORENIE SPRÁV V EDU-PAGE ŠTÝLE (Z VIDEA) ---
+    // --- OTVORENIE SPRÁV V EDU-PAGE ŠTÝLE ---
     function openInbox() {
         loadFromServer();
         document.getElementById("main-view").style.display = "none";
         document.getElementById("inbox-view").style.display = "flex";
 
         let container = document.getElementById("inbox-content-list");
-        let html = '<div class="date-divider">Dnes / Nedel' + 'a</div>';
+        let html = '<div class="date-divider">Nedel\'a</div>';
 
-        // Ak je inšpektorka, vidí správy od všetkých žiakov. Ak je žiak, vidí svoje správy a odpovede od Olívie.
         if (userRole === "Inšpektorka") {
             for (let sName in privateMessages) {
                 let chatList = privateMessages[sName];
-                chatList.forEach((m, idx) => {
+                chatList.forEach((m) => {
                     html += `
                         <div class="notif-card" onclick="replyAsInspector('${sName}')">
                             <div class="notif-icon">💬</div>
                             <div class="notif-body">
                                 <h4>Správa od žiaka: ${sName}</h4>
                                 <p><strong>${m.sender}:</strong> ${m.text}</p>
-                                ${m.reply ? `<p style="color:#4CAF50; margin-top:4px;"><strong>Odpoveď Olívia:</strong> ${m.reply}</p>` : '<p style="color:#ff8c5a; margin-top:4px;">(Klikni pre odpoveď)</p>'}
-                                <span class="notif-time">Autoškola EduPage</span>
+                                ${m.reply ? `<p style="color:#4CAF50; margin-top:4px;"><strong>Odpoveď Olívia:</strong> ${m.reply}</p>` : '<p style="color:#ff8c5a; margin-top:4px;">(Klikni sem pre odpoveď)</p>'}
+                                <span class="notif-time">EduPage notifikácia</span>
                             </div>
                         </div>
                     `;
@@ -502,7 +496,7 @@
                     <div class="notif-card">
                         <div class="notif-icon">✉️</div>
                         <div class="notif-body">
-                            <h4>Správa od inšpektorky / Konverzácia</h4>
+                            <h4>Správa od inšpektorky</h4>
                             <p><strong>${m.sender}:</strong> ${m.text}</p>
                             ${m.reply ? `<p style="color:#4CAF50; margin-top:4px;"><strong>Odpoveď Olívia:</strong> ${m.reply}</p>` : ''}
                             <span class="notif-time">EduPage notifikácia</span>
@@ -526,8 +520,9 @@
             if (student && privateMessages[student]) {
                 let msg = prompt("Zadajte text správy:");
                 if (msg) {
-                    privateMessages[student].push({ sender: "Inšpektorka Olívia", text: msg, reply: "Odoslané" });
+                    privateMessages[student].push({ sender: "Inšpektorka Olívia", text: msg, reply: "" });
                     saveAndSync();
+                    alert("Správa odoslaná!");
                     openInbox();
                 }
             }
@@ -537,6 +532,7 @@
                 if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
                 privateMessages[currentUser].push({ sender: currentUser, text: msg, reply: "" });
                 saveAndSync();
+                alert("Správa odoslaná inšpektorke!");
                 openInbox();
             }
         }
@@ -550,6 +546,7 @@
             if (chat && chat.length > 0) {
                 chat[chat.length - 1].reply = reply;
                 saveAndSync();
+                alert("Odpoveď bola uložená a odoslaná žiakovi!");
                 openInbox();
             }
         }
