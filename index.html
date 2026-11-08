@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPage - Autoškola (Firebase)</title>
-    <!-- Načítanie Firebase knižníc -->
+    <title>EduPage - Autoškola</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
@@ -31,19 +30,38 @@
         }
         .menu-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
         .title-area { text-align: center; }
-        .title-area h2 { margin: 0; font-size: 16px; color: #fff; }
+        .title-area h2 { margin: 0; font-size: 15px; color: #fff; }
         .title-area p { margin: 2px 0 0 0; font-size: 11px; color: #8c9baf; }
         
-        .mini-schedule-bar {
+        .edupage-header {
             background-color: #16202b;
-            padding: 6px 10px;
+            padding: 12px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 10px; border-bottom: 1px solid #263749;
-            color: #b4becd;
-            overflow-x: auto;
+            border-bottom: 1px solid #263749;
+            font-size: 18px; font-weight: bold;
         }
-        .mini-slot { text-align: center; padding: 0 4px; border-right: 1px solid #263749; }
-        .mini-slot span { display: block; font-weight: bold; color: #ff8c5a; font-size: 11px; }
+        .edupage-header span { color: #fff; font-size: 16px; }
+
+        .content-scroll {
+            overflow-y: auto; flex-grow: 1; padding: 10px;
+        }
+
+        /* EduPage štýl notifikácií a správ */
+        .date-divider {
+            font-size: 11px; color: #8c9baf; margin: 15px 0 8px 5px; text-transform: uppercase; font-weight: bold;
+        }
+        .notif-card {
+            background-color: #1a2636; border-radius: 8px; padding: 12px; margin-bottom: 8px;
+            display: flex; gap: 12px; align-items: flex-start; border-left: 4px solid #f59e0b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .notif-icon {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(245,158,11,0.2);
+            color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+        }
+        .notif-body h4 { margin: 0 0 4px 0; font-size: 13px; color: #fff; }
+        .notif-body p { margin: 0; font-size: 12px; color: #b4becd; line-height: 1.4; }
+        .notif-time { font-size: 10px; color: #6b7c93; margin-top: 6px; display: block; }
 
         .grid {
             display: grid; grid-template-columns: repeat(2, 1fr);
@@ -91,8 +109,8 @@
             background: rgba(0,0,0,0.75); justify-content: center; align-items: center; z-index: 200;
         }
         .modal-content {
-            background: #1a2533; padding: 20px; width: 85%; max-width: 360px;
-            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); max-height: 80vh; overflow-y: auto;
+            background: #1a2533; padding: 20px; width: 90%; max-width: 380px;
+            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); max-height: 85vh; overflow-y: auto;
         }
         .modal-content h3 { margin-top: 0; color: #ff8c5a; font-size: 16px; }
         .modal-content textarea, .modal-content input, .modal-content select {
@@ -122,109 +140,124 @@
         <button class="menu-btn" onclick="openAccountSwitch()" title="Prepnúť účet" style="font-size:14px; background:#0066cc; padding:4px 8px; border-radius:4px;">👥</button>
     </div>
 
-    <div class="mini-schedule-bar">
-        <div class="mini-slot"><span>1.</span>AUT<br>7:45</div>
-        <div class="mini-slot"><span>2.</span>JAZ<br>8:40</div>
-        <div class="mini-slot"><span>3.</span>TRE<br>9:35</div>
-        <div class="mini-slot"><span>4.</span>ZAS<br>10:30</div>
-        <div class="mini-slot"><span>5.</span>SKU<br>11:25</div>
+    <!-- Hlavná obrazovka s dlaždicami (domov) -->
+    <div id="main-view" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+        <div class="mini-schedule-bar">
+            <div class="mini-slot"><span>1.</span>AUT<br>7:45</div>
+            <div class="mini-slot"><span>2.</span>JAZ<br>8:40</div>
+            <div class="mini-slot"><span>3.</span>TRE<br>9:35</div>
+            <div class="mini-slot"><span>4.</span>ZAS<br>10:30</div>
+            <div class="mini-slot"><span>5.</span>SKU<br>11:25</div>
+        </div>
+
+        <div class="grid">
+            <div class="tile" onclick="openInbox()" style="border-left-color: #f59e0b;">
+                <div class="tile-icon-box" style="background: rgba(245,158,11,0.15); color: #f59e0b;">✉️</div>
+                <div class="tile-content">
+                    <h3>Správy</h3>
+                    <p>Súkromný chat a notifikácie</p>
+                </div>
+            </div>
+            
+            <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; saveAndSync(); })" style="border-left-color: #3b82f6;">
+                <div class="tile-icon-box" style="background: rgba(59,130,246,0.15); color: #3b82f6;">📅</div>
+                <div class="tile-content">
+                    <h3>Rozvrh / ETK</h3>
+                    <p>Sobota a Nedeľa</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; saveAndSync(); })" style="border-left-color: #10b981;">
+                <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">📖</div>
+                <div class="tile-content">
+                    <h3>Moje hodiny</h3>
+                    <p>Prehľad jázd</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openGrades()" style="border-left-color: #ef4444;">
+                <div class="tile-icon-box" style="background: rgba(239,68,68,0.15); color: #ef4444;">⭐</div>
+                <div class="tile-content">
+                    <h3>Známky</h3>
+                    <p>Priebežné hodnotenie</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, function(v) { examsText = v; saveAndSync(); })" style="border-left-color: #8b5cf6;">
+                <div class="tile-icon-box" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">⏰</div>
+                <div class="tile-content">
+                    <h3>DÚ / písomky</h3>
+                    <p>Termíny testov</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; saveAndSync(); })" style="border-left-color: #d97706;">
+                <div class="tile-icon-box" style="background: rgba(217,119,6,0.15); color: #d97706;">💼</div>
+                <div class="tile-content">
+                    <h3>Učivo</h3>
+                    <p>Záznamy hodín</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Výsledky', resultsText, true, function(v) { resultsText = v; saveAndSync(); })" style="border-left-color: #06b6d4;">
+                <div class="tile-icon-box" style="background: rgba(6,182,212,0.15); color: #06b6d4;">📊</div>
+                <div class="tile-content">
+                    <h3>Výsledky</h3>
+                    <p>Hodnotenie</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, function(v) { attendanceText = v; saveAndSync(); })" style="border-left-color: #14b8a6;">
+                <div class="tile-icon-box" style="background: rgba(20,184,166,0.15); color: #14b8a6;">📋</div>
+                <div class="tile-content">
+                    <h3>Dochádzka</h3>
+                    <p>Záznamy účasti</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Platby', 'Kurz je plne uhradený.', false)" style="border-left-color: #22c55e;">
+                <div class="tile-icon-box" style="background: rgba(34,197,94,0.15); color: #22c55e;">💳</div>
+                <div class="tile-content">
+                    <h3>Platby</h3>
+                    <p>Poplatky za kurz</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; saveAndSync(); })" style="border-left-color: #f97316;">
+                <div class="tile-icon-box" style="background: rgba(249,115,22,0.15); color: #f97316;">🔄</div>
+                <div class="tile-content">
+                    <h3>Suplovanie</h3>
+                    <p>Zmeny v rozvrhu</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Jedálny lístok', 'Kredit: 0 €', false)" style="border-left-color: #ec4899;">
+                <div class="tile-icon-box" style="background: rgba(236,72,153,0.15); color: #ec4899;">🍲</div>
+                <div class="tile-content">
+                    <h3>Jedálny lístok</h3>
+                    <p>Kredit: 0 €</p>
+                </div>
+            </div>
+
+            <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; saveAndSync(); })" style="border-left-color: #10b981;">
+                <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">🖼️</div>
+                <div class="tile-content">
+                    <h3>Nástenka</h3>
+                    <p>Materiály</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="grid">
-        <div class="tile" onclick="openInbox()" style="border-left-color: #f59e0b;">
-            <div class="tile-icon-box" style="background: rgba(245,158,11,0.15); color: #f59e0b;">✉️</div>
-            <div class="tile-content">
-                <h3>Správy</h3>
-                <p>Súkromný chat a notifikácie</p>
-            </div>
+    <!-- EduPage sekcia Správy (skrytá kým sa neklikne) -->
+    <div id="inbox-view" style="display: none; flex-direction: column; height: 100%; overflow: hidden;">
+        <div class="edupage-header">
+            <button onclick="closeInboxView()" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">← Späť</button>
+            <span>Všetky správy a notifikácie</span>
+            <button onclick="openNewMessagePrompt()" style="background:#4CAF50; border:none; color:white; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">+ Napísať</button>
         </div>
-        
-        <div class="tile" onclick="openModal('Rozvrh / ETK', scheduleText, true, function(v) { scheduleText = v; saveAndSync(); })" style="border-left-color: #3b82f6;">
-            <div class="tile-icon-box" style="background: rgba(59,130,246,0.15); color: #3b82f6;">📅</div>
-            <div class="tile-content">
-                <h3>Rozvrh / ETK</h3>
-                <p>Sobota a Nedeľa</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Moje hodiny', myClassesText, true, function(v) { myClassesText = v; saveAndSync(); })" style="border-left-color: #10b981;">
-            <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">📖</div>
-            <div class="tile-content">
-                <h3>Moje hodiny</h3>
-                <p>Prehľad jázd</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openGrades()" style="border-left-color: #ef4444;">
-            <div class="tile-icon-box" style="background: rgba(239,68,68,0.15); color: #ef4444;">⭐</div>
-            <div class="tile-content">
-                <h3>Známky</h3>
-                <p>Priebežné hodnotenie</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('DÚ / písomky', examsText, true, function(v) { examsText = v; saveAndSync(); })" style="border-left-color: #8b5cf6;">
-            <div class="tile-icon-box" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">⏰</div>
-            <div class="tile-content">
-                <h3>DÚ / písomky</h3>
-                <p>Termíny testov</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Učivo', uciwoText, true, function(v) { uciwoText = v; saveAndSync(); })" style="border-left-color: #d97706;">
-            <div class="tile-icon-box" style="background: rgba(217,119,6,0.15); color: #d97706;">💼</div>
-            <div class="tile-content">
-                <h3>Učivo</h3>
-                <p>Záznamy hodín</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Výsledky', resultsText, true, function(v) { resultsText = v; saveAndSync(); })" style="border-left-color: #06b6d4;">
-            <div class="tile-icon-box" style="background: rgba(6,182,212,0.15); color: #06b6d4;">📊</div>
-            <div class="tile-content">
-                <h3>Výsledky</h3>
-                <p>Hodnotenie</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Dochádzka', attendanceText, true, function(v) { attendanceText = v; saveAndSync(); })" style="border-left-color: #14b8a6;">
-            <div class="tile-icon-box" style="background: rgba(20,184,166,0.15); color: #14b8a6;">📋</div>
-            <div class="tile-content">
-                <h3>Dochádzka</h3>
-                <p>Záznamy účasti</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Platby', 'Kurz je plne uhradený.', false)" style="border-left-color: #22c55e;">
-            <div class="tile-icon-box" style="background: rgba(34,197,94,0.15); color: #22c55e;">💳</div>
-            <div class="tile-content">
-                <h3>Platby</h3>
-                <p>Poplatky za kurz</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Suplovanie', suplovanieText, true, function(v) { suplovanieText = v; saveAndSync(); })" style="border-left-color: #f97316;">
-            <div class="tile-icon-box" style="background: rgba(249,115,22,0.15); color: #f97316;">🔄</div>
-            <div class="tile-content">
-                <h3>Suplovanie</h3>
-                <p>Zmeny v rozvrhu</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Jedálny lístok', 'Kredit: 0 €', false)" style="border-left-color: #ec4899;">
-            <div class="tile-icon-box" style="background: rgba(236,72,153,0.15); color: #ec4899;">🍲</div>
-            <div class="tile-content">
-                <h3>Jedálny lístok</h3>
-                <p>Kredit: 0 €</p>
-            </div>
-        </div>
-
-        <div class="tile" onclick="openModal('Fotky / Nástenka', nastenkaText, true, function(v) { nastenkaText = v; saveAndSync(); })" style="border-left-color: #10b981;">
-            <div class="tile-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">🖼️</div>
-            <div class="tile-content">
-                <h3>Nástenka</h3>
-                <p>Materiály</p>
-            </div>
+        <div class="content-scroll" id="inbox-content-list">
+            <!-- Sem sa dynamicky nahodia správy v štýle EduPage feedu -->
         </div>
     </div>
 </div>
@@ -289,19 +322,19 @@
 
     let privateMessages = {
         "Timotej": [
-            { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy presne začíname v sobotu?", reply: "Dobrý deň, začínam o 8:00." }
+            { sender: "Timotej", text: "Dobrý deň pani inšpektorka, kedy presne začíname v sobotu?", reply: "Dobrý deň, začínam o 8:00.", date: "Sobota" }
         ],
         "Eliška": [
-            { sender: "Eliška", text: "Dobrý deň, chcela by som poprosiť o heslo na moje konto.", reply: "" }
+            { sender: "Eliška", text: "Dobrý deň, chcela by som poprosiť o heslo na moje konto.", reply: "", date: "Piatok" }
         ],
         "Rebeka": [
-            { sender: "Rebeka", text: "Dobrý deň, zvládla som testy na výbornú!", reply: "Skvelá práca Rebeka, gratulujem!" }
+            { sender: "Rebeka", text: "Dobrý deň, zvládla som testy na výbornú!", reply: "Skvelá práca Rebeka, gratulujem!", date: "Piatok" }
         ]
     };
 
     let currentSaveCallback = null;
 
-    // --- FIREBASE NASTAVENIE (VEREJNÁ BEZPLATNÁ TESTOVACIA DATABÁZA) ---
+    // --- FIREBASE NASTAVENIE ---
     const firebaseConfig = {
         databaseURL: "https://autoskola-edupage-default-rtdb.europe-west1.firebasedatabase.app"
     };
@@ -339,7 +372,6 @@
         loadFromServer();
         updateUIHeaders();
 
-        // Okamžite počúva zmeny z cloudu bez čakania
         dbRef.on('value', (snapshot) => {
             let json = snapshot.val();
             if (json) {
@@ -433,6 +465,96 @@
         document.getElementById("drawer-user-name").innerText = currentUser;
     }
 
+    // --- OTVORENIE SPRÁV V EDU-PAGE ŠTÝLE (Z VIDEA) ---
+    function openInbox() {
+        loadFromServer();
+        document.getElementById("main-view").style.display = "none";
+        document.getElementById("inbox-view").style.display = "flex";
+
+        let container = document.getElementById("inbox-content-list");
+        let html = '<div class="date-divider">Dnes / Nedel' + 'a</div>';
+
+        // Ak je inšpektorka, vidí správy od všetkých žiakov. Ak je žiak, vidí svoje správy a odpovede od Olívie.
+        if (userRole === "Inšpektorka") {
+            for (let sName in privateMessages) {
+                let chatList = privateMessages[sName];
+                chatList.forEach((m, idx) => {
+                    html += `
+                        <div class="notif-card" onclick="replyAsInspector('${sName}')">
+                            <div class="notif-icon">💬</div>
+                            <div class="notif-body">
+                                <h4>Správa od žiaka: ${sName}</h4>
+                                <p><strong>${m.sender}:</strong> ${m.text}</p>
+                                ${m.reply ? `<p style="color:#4CAF50; margin-top:4px;"><strong>Odpoveď Olívia:</strong> ${m.reply}</p>` : '<p style="color:#ff8c5a; margin-top:4px;">(Klikni pre odpoveď)</p>'}
+                                <span class="notif-time">Autoškola EduPage</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        } else {
+            let chat = privateMessages[currentUser] || [];
+            if (chat.length === 0) {
+                html += '<p style="text-align:center; color:#8c9baf; margin-top:20px;">Žiadne nové správy.</p>';
+            }
+            chat.forEach((m) => {
+                html += `
+                    <div class="notif-card">
+                        <div class="notif-icon">✉️</div>
+                        <div class="notif-body">
+                            <h4>Správa od inšpektorky / Konverzácia</h4>
+                            <p><strong>${m.sender}:</strong> ${m.text}</p>
+                            ${m.reply ? `<p style="color:#4CAF50; margin-top:4px;"><strong>Odpoveď Olívia:</strong> ${m.reply}</p>` : ''}
+                            <span class="notif-time">EduPage notifikácia</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        container.innerHTML = html;
+    }
+
+    function closeInboxView() {
+        document.getElementById("inbox-view").style.display = "none";
+        document.getElementById("main-view").style.display = "flex";
+    }
+
+    function openNewMessagePrompt() {
+        if (userRole === "Inšpektorka") {
+            let student = prompt("Komu chcete poslať správu? (Timotej, Eliška, Rebeka):");
+            if (student && privateMessages[student]) {
+                let msg = prompt("Zadajte text správy:");
+                if (msg) {
+                    privateMessages[student].push({ sender: "Inšpektorka Olívia", text: msg, reply: "Odoslané" });
+                    saveAndSync();
+                    openInbox();
+                }
+            }
+        } else {
+            let msg = prompt("Napíšte správu inšpektorke Olívii:");
+            if (msg) {
+                if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
+                privateMessages[currentUser].push({ sender: currentUser, text: msg, reply: "" });
+                saveAndSync();
+                openInbox();
+            }
+        }
+    }
+
+    function replyAsInspector(studentName) {
+        if (userRole !== "Inšpektorka") return;
+        let reply = prompt("Zadajte odpoveď pre žiaka " + studentName + ":");
+        if (reply) {
+            let chat = privateMessages[studentName];
+            if (chat && chat.length > 0) {
+                chat[chat.length - 1].reply = reply;
+                saveAndSync();
+                openInbox();
+            }
+        }
+    }
+
     function openModal(title, text, editable, saveCallback) {
         document.getElementById("modal-title").innerText = title;
         let isEditable = (userRole === "Inšpektorka" && editable);
@@ -454,7 +576,7 @@
         if (currentSaveCallback) { 
             currentSaveCallback(val); 
             saveAndSync();
-            alert("Potvrdené a okamžite zosynchronizované cez Firebase!"); 
+            alert("Uložené a zosynchronizované v cloude!"); 
         }
         closeModal();
     }
@@ -478,14 +600,14 @@
             html += '<tr style="border-bottom:1px solid #333; vertical-align: top;">' +
                 '<td style="padding: 6px 0;"><strong>' + name + '</strong></td>' +
                 '<td style="padding: 6px 0;">' + s.grades.join(", ") + ' <span style="color:#ff8c5a;">(' + avg + ')</span>' +
-                (userRole === "Inšpektorka" ? '<br><button onclick="openManageGrades(\'' + name + '\')" style="background:#0066cc; color:white; border:none; padding:3px 6px; font-size:10px; border-radius:3px; margin-top:4px; cursor:pointer;">Upraviť známky</button>' : '') + '</td>' +
+                (userRole === "Inšpektorka" ? '<br><button onclick="openManageGrades(\'' + name + '\')" style="background:#0066cc; color:white; border:none; padding:3px 6px; font-size:10px; border-radius:3px; margin-top:4px; cursor:pointer;">Upraviť</button>' : '') + '</td>' +
                 '<td style="padding: 6px 0; font-size:11px;">' + behText + 
-                (userRole === "Inšpektorka" ? '<br><button onclick="openManageBehavior(\'' + name + '\')" style="background:#4CAF50; color:white; border:none; padding:3px 6px; font-size:10px; border-radius:3px; margin-top:4px; cursor:pointer;">+ Poznámka / Pochvala</button>' : '') + '</td>' +
+                (userRole === "Inšpektorka" ? '<br><button onclick="openManageBehavior(\'' + name + '\')" style="background:#4CAF50; color:white; border:none; padding:3px 6px; font-size:10px; border-radius:3px; margin-top:4px; cursor:pointer;">+ Pozn.</button>' : '') + '</td>' +
             '</tr>';
         }
         html += '</table>';
 
-        document.getElementById("modal-title").innerText = "Známky a správanie - Autoškola";
+        document.getElementById("modal-title").innerText = "Známky a správanie";
         document.getElementById("modal-body").innerHTML = html;
         document.getElementById("modal-save").style.display = "none";
         document.getElementById("custom-modal").style.display = "flex";
@@ -493,22 +615,15 @@
 
     function openManageGrades(studentName) {
         let html = '<p>Správa známok pre: <strong>' + studentName + '</strong></p>';
-        html += '<p style="font-size:11px; color:#aaa;">Pridať známku:</p>';
         html += '<div style="margin-bottom:10px;">';
         for(let i=1; i<=5; i++) {
             html += '<button onclick="addGradeTemp(\'' + studentName + '\', ' + i + ')" class="btn-grade">' + i + '</button>';
         }
         html += '</div>';
-
-        html += '<p style="font-size:11px; color:#aaa;">Aktuálne známky (kliknutím zmažeš):</p>';
         html += '<div id="manage-grades-list">';
         studentsData[studentName].grades.forEach(function(g, idx) {
             html += '<button onclick="removeGradeTemp(\'' + studentName + '\', ' + idx + ')" class="btn-del">' + g + ' ✕</button>';
         });
-        html += '</div>';
-        
-        html += '<div style="margin-top:20px; text-align:right;">';
-        html += '<button onclick="confirmGradesChange(\'' + studentName + '\')" style="background:#4CAF50; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:bold; cursor:pointer;">Potvrdiť a odoslať</button>';
         html += '</div>';
         html += '<br><button onclick="openGrades()" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Späť</button>';
 
@@ -517,172 +632,25 @@
 
     function addGradeTemp(studentName, gradeNum) {
         studentsData[studentName].grades.push(gradeNum);
+        saveAndSync();
         openManageGrades(studentName);
     }
 
     function removeGradeTemp(studentName, index) {
         studentsData[studentName].grades.splice(index, 1);
+        saveAndSync();
         openManageGrades(studentName);
     }
 
-    function confirmGradesChange(studentName) {
-        if (!privateMessages[studentName]) privateMessages[studentName] = [];
-        privateMessages[studentName].push({
-            sender: "Inšpektorka Olívia",
-            text: "Aktualizované hodnotenie známok.",
-            reply: "Priemer bol prepočítaný."
-        });
-
-        saveAndSync();
-        alert("Potvrdené! Zmeny známok boli uložené do cloudu.");
-        openGrades();
-    }
-
     function openManageBehavior(studentName) {
-        let html = '<p>Pridať záznam pre: <strong>' + studentName + '</strong></p>';
-        html += '<button onclick="addBehaviorItem(\'' + studentName + '\', \'Pochvala\')" style="background:#4CAF50; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:8px; cursor:pointer;">✨ Pridať pochvalu</button>';
-        html += '<button onclick="addBehaviorItem(\'' + studentName + '\', \'Poznámka\')" style="background:#ef4444; color:white; border:none; padding:8px; border-radius:4px; width:100%; margin-bottom:8px; cursor:pointer;">⚠️ Pridať poznámku</button>';
-        html += '<br><button onclick="openGrades()" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Späť</button>';
-
-        document.getElementById("modal-body").innerHTML = html;
-    }
-
-    function addBehaviorItem(studentName, type) {
         let cleanName = studentName.trim();
-        let desc = prompt("Zadajte text pre " + type.toLowerCase() + ":");
+        let desc = prompt("Zadajte text pre pochvalu / poznámku:");
         if (desc) {
-            let record = type + ": " + desc;
+            let record = "Záznam: " + desc;
             studentsData[cleanName].behavior.push(record);
-            
-            if (!privateMessages[cleanName]) privateMessages[cleanName] = [];
-            privateMessages[cleanName].push({
-                sender: "Inšpektorka Olívia",
-                text: "Nový záznam v správaní: " + record,
-                reply: "Prosím venujte tomu pozornosť."
-            });
-
             saveAndSync();
-            alert("Potvrdené! Záznam bol uložený.");
+            alert("Uložené!");
             openGrades();
-        }
-    }
-
-    function openInbox() {
-        loadFromServer();
-        let html = '';
-        if (userRole === "Inšpektorka") {
-            html += '<p style="font-size:11px; color:#8c9baf;">Hromadná správa viacerým žiakom:</p>';
-            html += '<div style="margin-bottom:10px; background:#233042; padding:8px; border-radius:4px;">';
-            html += '<label><input type="checkbox" id="chk-timotej" checked> Timotej</label><br>';
-            html += '<label><input type="checkbox" id="chk-eliska" checked> Eliška</label><br>';
-            html += '<label><input type="checkbox" id="chk-rebeka" checked> Rebeka</label><br>';
-            html += '<button onclick="sendBulkMessage()" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-top:5px; cursor:pointer;">Potvrdiť a odoslať vybraným žiakom</button>';
-            html += '</div>';
-            
-            html += '<p style="font-size:11px; color:#8c9baf;">Alebo kliknite na individuálny chat:</p>';
-            html += '<button onclick="showInspectorChat(\'Timotej\')" style="background:#233042; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:4px; cursor:pointer;">💬 Chat s Timotejom</button>';
-            html += '<button onclick="showInspectorChat(\'Eliška\')" style="background:#233042; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:4px; cursor:pointer;">💬 Chat s Eliškou</button>';
-            html += '<button onclick="showInspectorChat(\'Rebeka\')" style="background:#233042; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:4px; cursor:pointer;">💬 Chat s Rebekou</button>';
-        } else {
-            let chat = privateMessages[currentUser] || [];
-            html += '<div style="max-height:200px; overflow-y:auto; margin-bottom:10px;">';
-            chat.forEach(function(m) {
-                html += '<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">' +
-                    '<strong>Od: ' + m.sender + '</strong><p style="margin:4px 0;">' + m.text + '</p>' +
-                    (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď Olívie: ' + m.reply + '</p>' : '') +
-                '</div>';
-            });
-            html += '</div>';
-            html += '<button onclick="sendStudentMessage()" style="background:#0066cc; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">Napísať správu inšpektorke</button>';
-            html += '<button onclick="requestStudentPassword()" style="background:#ff8c5a; color:white; border:none; padding:6px; border-radius:4px; width:100%; cursor:pointer;">🔑 Poprosiť o heslo</button>';
-        }
-
-        document.getElementById("modal-title").innerText = "Inbox / Súkromné správy";
-        document.getElementById("modal-body").innerHTML = html;
-        document.getElementById("modal-save").style.display = "none";
-        document.getElementById("custom-modal").style.display = "flex";
-    }
-
-    function sendBulkMessage() {
-        let text = prompt("Zadajte text hromadnej správy od inšpektorky Olívie:");
-        if (text) {
-            let targets = [];
-            if (document.getElementById("chk-timotej").checked) targets.push("Timotej");
-            if (document.getElementById("chk-eliska").checked) targets.push("Eliška");
-            if (document.getElementById("chk-rebeka").checked) targets.push("Rebeka");
-
-            targets.forEach(function(sName) {
-                if (!privateMessages[sName]) privateMessages[sName] = [];
-                privateMessages[sName].push({
-                    sender: "Inšpektorka Olívia (Hromadná správa)",
-                    text: text,
-                    reply: "Odoslané hromadne."
-                });
-            });
-
-            saveAndSync();
-            alert("Potvrdené! Hromadná správa bola odoslaná.");
-            openInbox();
-        }
-    }
-
-    function showInspectorChat(studentName) {
-        let chat = privateMessages[studentName] || [];
-        let html = '<p><strong>Súkromný chat s: ' + studentName + '</strong></p>';
-        html += '<div style="max-height:180px; overflow-y:auto; margin-bottom:10px;">';
-        chat.forEach(function(m) {
-            html += '<div style="background:#233042; padding:8px; border-radius:4px; margin-bottom:8px; font-size:11px;">' +
-                '<strong>Od: ' + m.sender + '</strong><p style="margin:4px 0;">' + m.text + '</p>' +
-                (m.reply ? '<p style="margin:2px 0; color:#4CAF50;">Odpoveď: ' + m.reply + '</p>' : '') +
-            '</div>';
-        });
-        html += '</div>';
-        html += '<button onclick="inspectorReply(\'' + studentName + '\')" style="background:#4CAF50; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">Potvrdiť a odpovedať žiakovi</button>';
-        html += '<button onclick="inspectorSetPassword(\'' + studentName + '\')" style="background:#ff8c5a; color:white; border:none; padding:6px; border-radius:4px; width:100%; margin-bottom:5px; cursor:pointer;">🔑 Nastaviť heslo pre ' + studentName + '</button>';
-        html += '<button onclick="openInbox()" style="background:#444; color:white; border:none; padding:6px; border-radius:4px; width:100%; cursor:pointer;">Späť</button>';
-
-        document.getElementById("modal-body").innerHTML = html;
-    }
-
-    function sendStudentMessage() {
-        let text = prompt("Napíšte správu inšpektorke Olívii:");
-        if (text) {
-            if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
-            privateMessages[currentUser].push({ sender: currentUser, text: text, reply: "" });
-            saveAndSync();
-            alert("Správa bola odoslaná inšpektorke.");
-            openInbox();
-        }
-    }
-
-    function requestStudentPassword() {
-        let text = "Prosím o vytvorenie osobného hesla pre moje konto.";
-        if (!privateMessages[currentUser]) privateMessages[currentUser] = [];
-        privateMessages[currentUser].push({ sender: currentUser, text: text, reply: "" });
-        saveAndSync();
-        alert("Žiadosť bola odoslaná.");
-        openInbox();
-    }
-
-    function inspectorReply(studentName) {
-        let replyText = prompt("Zadajte odpoveď pre žiaka " + studentName + ":");
-        if (replyText) {
-            let chat = privateMessages[studentName];
-            if (chat && chat.length > 0) {
-                chat[chat.length - 1].reply = replyText;
-                saveAndSync();
-                alert("Potvrdené a odoslané!");
-                showInspectorChat(studentName);
-            }
-        }
-    }
-
-    function inspectorSetPassword(studentName) {
-        let newPass = prompt("Zadajte nové trvalé heslo pre žiaka " + studentName + ":");
-        if (newPass) {
-            passwords[studentName] = newPass;
-            saveAndSync();
-            alert("Heslo bolo nastavené.");
         }
     }
 
